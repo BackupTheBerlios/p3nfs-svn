@@ -1,0 +1,20 @@
+// BLD.INF
+//
+// Copyright (c) 2001 Symbian Ltd.  All rights reserved.
+//
+
+
+PRJ_PLATFORMS
+
+DEFAULT
+
+PRJ_EXPORTS
+
+nfsclient.iby      \epoc32\rom\include\nfsclient.iby
+
+PRJ_MMPFILES
+
+nfsclient.mmp
+
+PRJ_TESTMMPFILES
+

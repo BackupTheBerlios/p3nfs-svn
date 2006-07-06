@@ -1,0 +1,349 @@
+INTRO:
+  This package lets you mount the psion drives on your unix workstation
+  over a serial cable. You can access all the files from the psion with
+  the usual commands like tar, cp, vi & co.
+
+  The Psion C-client is capable of terminal emulation (vt100/vt220 with
+  function key support) and it is fully functional without the Unix daemon.
+
+  License: GNU General Public Licence (Version 2)
+
+  You have to be root in order to start the Unix program because it uses
+  the mount systemcall. It should run on different UNIX variants like
+  SunOS / Solaris / Linux / HP-UX / (Irix / AIX).
+
+  Author: Rudolf Koenig
+  Linux port by Juergen Weigert, with help from Lee McLoughlin and others. 
+  NetBSD port by Mike Meyer.
+  Many thx to N.N., who returned test reports faster than we could compile.
+  IRIX port and many changes by Michael Schroeder.
+
+CORRECTION:
+  p3nfsd is not really an nfs daemon. You can't mount the psion from
+  another workstation, only from the one, where it is attached to via
+  the serial cable. I used nfs, beause it is a portable way to capture
+  filesystem operations in a program. The daemon talks to the opl or C
+  program on the psion through a simple protocol.
+
+COMPILING / INSTALLING:
+  First:
+    Make sure you know which operating system you are using:
+    % uname -a
+
+    As the program depends on hardware flow control, you may need OS patches.
+    It's quite sure that you won't get a correct transmission without proper
+    hardware flow control.
+
+    Please check out the following list and verify, that you have the patch
+    installed. It is a good idea to search for newer patches.
+
+    Supported Architectures:
+
+    - SunOS 4.1.3
+      jumbo-tty patch from Nov 93, id 100513-4 is needed.
+    - SunOS 4.1.3_U1:
+      kernel patch 101621-02  'Jumbo tty patch',
+      available at the archive under pointer
+	http://src.doc.ic.ac.uk/sun/sun_fixes/sunos4.1.3_U1/101621-02.tar.Z
+      (reported by Oliver Meis (eedolm@aachen.ericsson.se))
+    - SunOS 4.1.4
+      I don't remember patching my machine, and it works quite well.
+    - Solaris 2.3/2.4/2.5
+      Use showrev -p to show the patches installed.
+      Solaris 2.3: patch 102028-01 (Sept. 94) for RTS/CTS is needed.
+                   (If somebody needs the patch, and has NO other way to
+		    find it, ask caronni@tik.ethz.ch)
+      Solaris 2.4: patch 102029-01 _or_ 102845-02 (both of them fix RTS/CTS)
+		   102029 should work, not tested
+                   102845 is newer, the README confused me, but works (tested)
+      Solaris 2.5: You don't need any patches, as the RTS/CTS patch was finally
+                   included
+    - Linux (intel) works without patches
+      There is a reported success of Linux/APX (alpha).
+      SparcLinux won't work as of 14.11.1996
+    - IRIX 5.3 should work without patches
+    - HPUX 10.20 was reported to work. 
+    - NetBSD was also tested.
+
+  Compile nfsd
+  1. Try to use the configure script (from Juergen), this was tested at least
+     on SunOS 4.1.4 and Solaris 2.5.1
+     In the main p3nfsd directory enter the command:
+     % make
+  2. (If the first one won't work)
+     % cd nfsd
+     Uncomment the appropriate Makefile settings:
+     % vi Makefile (you can use other editors too :-)
+	If you don't see any lines for your OS, then you can go now to
+	the chapter PORTING, or free up some disk space.
+     Next check if you like the defaults
+     % vi ../include/config.h
+     and compile it
+     % make
+     If you want to run it as non-root:
+     # chown root /usr/local/bin/p3nfsd
+     # chmod 4711 /usr/local/bin/p3nfsd
+     It should be safe to run p3nfsd 5.1 or greater as setuid root,
+     _unlike_ the previous versions.
+
+  The clients:
+  nfsc
+    See nfsc/README for more. It is available for S3/S3a/S3c/Siena.
+
+  nfsc.opl
+    A big advantage of the opl version over the C version that it is 2k
+    compiled instead of 28k.
+    Disadvantages: No builtin vt100, directory operations are slower,
+    lost characters are confusing it more easily.
+    Copy the correct version from the opl directory to your psion, and
+    translate it.
+
+  Setting up the mount directory:
+  # mkdir /psion.stand
+  # mkdir /psion.stand/mnt
+  # cd /psion.stand
+  # ln -s mnt/loc::a: a
+  # ln -s mnt/loc::b: b
+  # ln -s mnt/loc::m: m
+  Don't mount it directly under root (as e.g. p3nfsd -dir /mnt) as if
+  p3nfsd crashes, it may stop "pwd" & "ls /" from working, these are
+  used by more programs than one would expect.
+
+
+BOOTSTRAPPING:
+  (i.e copying nfscX.opl or nfsc.app the first time to your psion)
+  Possibilities:
+    The easy ones:
+    	Use RCOM/PsiWin or your friends copy on SSD.
+    The purist one:
+    	Type in the opl program.
+    	Don't be afraid, you will not be the first one nor the second to
+	type it in, but there are no more free p3nfsd's to win :-)
+    The genial one:
+    	Log in on the UNIX with the builtin Comms app, and switch logging
+	on. Now type "cat nfsc.opl" on your psion. Translate the "log" file.
+	Shame on me, this was not my idea.
+	Minor problem for Sienas: They don't have a builtin Comms app :-(
+
+    Oliver Seidel posted a short version for bootstrapping, here is the
+    relevant part from his posting:
+
+    > So how do you use that beast?  Type it in, start it and pour the file
+    > NFSC.OPL down the serial link.  Make sure it has a bit more than 6000
+    > characters (pad it with spaces if necessary), or adapt the line with
+    > the 6000 below.  Also, it's vital that your NFSC.OPL has line feeds
+    > represented as 0x0d 0x0a (DOS format).  
+    >    
+    >   PROC bootstrap:
+    >     local b$(250), h%, i%, l%, s%(6), t&
+    >     lopen "TTY:A" : s%(1)=$1010 : s%(2)=3
+    >     s%(3)=$1100 : s%(4)=$13 : t&=&0
+    >     pokel addr(s%(5)), t& : iow(-1,7,s%(1),i%)
+    >     ioopen(h%,"\OPL\NFSC.OPL",$102)
+    >     l%=6000 : while l%
+    >       i%=l% : if i%>250 : i%=250 : endif
+    >       iow(-1,1,#uadd(addr(b$),1),i%)
+    >       iowrite(h%,uadd(addr(b$),1),i%)
+    >       l%=l%-i%
+    >     endwh
+    >     ioclose(h%)
+    >   ENDP
+
+
+STARTING:
+  First: Make sure the Serial Link is connected both to your unix machine
+  and to your psion.
+
+  There are two basic ways of starting it, with or without the unix
+  getty/login occupying the serial line.
+
+1.Without the getty/login:
+  Make sure there is no login program running on the port:
+    SunOs 4.x: edit /etc/ttytab, set status to "off", wake up init: kill -1 1
+	       Verify that the serial port has the softcarrier enabled. See
+	       man ttysoftcar(1). This is only important if you plan to (or
+	       not plan to but do) start the p3nfsd without a psion attached.
+    Solaris 2.x: disable the port with the admintool/serial port manager
+
+  - If you are using nfsc, start it with a new configuration.
+    This way you make sure you use the correct settings for p3nfsd.
+  - If you are using the opl client just start it, as you cant easily change
+    the serial line parameters.
+
+  On the unix machine type:
+    % p3nfsd -h (to see the options you can choose from)
+
+  S3/S3a/S3c/Siena users:
+    % p3nfsd -series3 -shell $SHELL
+    or if using an opl client
+    % p3nfsd -series3 -oldnfsc  
+
+2.With a login program (getty) enabled.
+  Make sure the login program is running. 
+  On SunOs: the softcarrier has to be enabled.
+  On IRIX: Please use ttyf? instead of ttyd? for flow-control.
+  a. Log in.
+     Start nfsc.app, and set the correct serial line parameters:
+     Following works for a SunOs 4.x (Solaris 2.x) default setting.
+     Serial Line->Parameters:	Baudrate: 9600
+      				Databits: 7		(8 for Solaris 2.x)
+				Stopbits: 1		
+				Parity:   even		(none for Solaris 2.x)
+				Ignore parity: yes
+  b. We now have to set the correct parameters for the nfsc/nfsd communication.
+     Each parameter is to set both on the psion and the unix host!
+     Following settings are required:
+
+     change the baudrate if you wish:
+                unix: stty <baudrate>; nfsc Serial Line->Parameters->Baudrate
+     no parity  unix: stty -parenb;    nfsc Serial Line->Parameters->Parity:none
+     1 stopbit  unix: stty -cstopb;    nfsc Serial Line->Parameters->Stopbits: 1
+     8 databits unix: stty cs8;        nfsc Serial Line->Parameters->Databits: 8
+     Hardware flow control
+                unix: stty crtscts,    nfsc Serial Line->Handshaking: Hardware
+     This changes are better made in the "Terminal only" mode, then switch
+     back to "Nfsc->Nfsd support:Terminal + New p3nfsd".
+     Now we can start the p3nfsd:
+     % p3nfsd -series3 -shell $SHELL -
+     You should get a new prompt, and the emulator should be faster.
+     WARNING: Do NOT use the -tty option with the getty running.
+
+  If you wish to exit the nfsd type "ls <mntdir>/exit"
+
+TESTING:
+  Try ls <mntdir>, if works ls -l <mntdir>. It should display a list of
+  funny named psion devices.
+
+FEATURES / TIPS:
+  - type p3nfsd -help to see all options.
+  - nfsc verifies a crc when reading or writing files to the nfsd.
+    For its terminal emulator features see nfsc/README
+  - there is a termcap entry / terminfo source file in the etc directory
+    which describes most capabilities, but vt100,vt220 or ansi should work.
+  - If you are using the C client as a terminal emulator only, please
+    switch it in the "Terminal only" mode: it is faster as the default
+    combined mode, which is specially for use with the p3nfsd -shell option.
+  - nfsd automatically converts all filenames from charset ibm850 (psion)
+    to iso8859-1. Only characters > 127 are effected. (EPOC16 only)
+  - The opl program prints a character for each request it receives.
+    The C client does this in a status line if it is enabled.
+    CAPS letters mean a call returned error. This is normal, e.g.
+    if you check before creating it if a file exists.
+  - If you want to enable the "automatic wakeup on demand" feature, you
+    have to turn the switch in the LINK cable and start p3nfsd with the 
+    -wakeup option. This option enabled causes a delay of some seconds
+    before an error is reported if the psion is not attached.
+  - You can specify a UNIX program which is called each time the psion
+    is connected or disconnected. (nfsd -connect / -disconnect)
+    You can use this to do automatic backups or the like.
+  - ls <mntdir>/debug, SIGUSR1, and the option -v increases the p3nfsd debug
+    level (there are 4 levels, from 0 to 3).
+  - NEW (as of version 5.1) is remote exec (nfsc.app ONLY).
+    There is now a way to execute psion programs from the unix side.
+    There is a novice support for opo (OPL) programs, and a primitive
+    but complete one for OPA/IMG/APP programs.
+    The novice one:
+      % cd /psion.stand/m/opo
+      % ls 'exec dialme.opo'
+      It always reports "No such file or directory". If it would report
+      ok, the OS would cache the result and won't ask the p3nfsd again.
+      Take care if using touch instead of ls, as this can start the
+      program 2 or 3 times, depending on the OS you are using.
+    The complete one:
+      This was inspired by the psionic file syscalls.1, description of
+      FilExecute. Read it if you want to understand the examples below:
+      % cd /psion.stand/mnt/rom::
+      % ls 'exec word.app OWord~~\wrd\old.wrd~'
+      % ls 'exec data.app OData~~\dat\old.dbf~'
+      % ls 'exec data.app CData~~\dat\new.dbf~'
+      % cd /
+      % ls '/psion.stand/mnt/rom::exec word.app OWord~~\wrd\old.wrd~'
+      % ls '/psion.stand/m/app/exec etxtread.app OEtxtRead~~\wrd\old.txt~'
+  - Beside the remote exec there is a "remote echo", to display a
+    message on the emulator:
+      % cd /psion.stand/m
+      % ls 'echo Message in the lower left corner'
+
+
+
+KNOWN PROBLEMS:
+  - Ian Phillipps reports a way, where nfsc can cause the Psion to
+    do a hard reset, loosing ALL the files on the internal drive.
+    The scenario is:
+    - use nfsc to log in and start up the nfs server
+    - replace the main batteries in the Psion
+    - turn back on - your Psion will perform a hard reset.
+    This MAY happen. Workaround: Please try to avoid replacing the
+    batteries while using nfsc (or other terminal software).
+  - Most problems arises from a not working hardware flowcontrol.
+    My method of checking if it works is to get a shell on the psion
+    and type something like "ls -l /" in it. If the output is garbled,
+    the flowcontrol is gone.
+  - If you have a dialog open in nfsc.app, the program can't respond
+    to any requests.
+  - As nfs caches data, you may see an empty main directory even after
+    _re_attaching the psion. Just go to your desired directory:
+    cd /psion.stand/m/wrd
+  - As Solaris 2.5 caches even more, you get your prompt back before
+    the data is flushed. 
+  - While nfsc.opl is transferring data, please avoid any activity on
+    the psion AND SWITCH TO THE NFSC APPLICATION !!!!
+    (especially if writing on ssd), as such activity can lead to malfunc-
+    tioning of the hardware flow-control :-(
+    NOTE: If you experience problems, please switch off the automatic
+    update function for the System screen and also switch the clock
+    window off.
+  - It is not recommended to mount the psion on top of an nfs
+    mounted directory (problems with df). Affects diskless clients.
+  - setattribute is only partially implemented ->
+    - tar may report problems after unpacking each file
+    - you can't delete read-only files from the unix-side
+  - please close all open files before doing a backup, as the files are
+    opened exclusively by most programs (not nfsc.opl) and so they can't
+    be read by anybody else.
+  - DO NOT USE programs wich support hole files (by seeking to the new
+    position instead of writing the zeroes) as the Psion don't supports
+    such files and a workaround is not (yet) implemented. Each block
+    above the "hole" will be lost.
+  
+  - I encountered some problems on HP-UX, with writing files on the psion.
+    The problem is that the kernel and each of the biod's are trying to
+    send the nfs packets, in order to get a better performance. If the file
+    is bigger than 3 times BLOCKSIZE, I receive following blocks:
+    1. the last one(!)
+    2. the first one
+    3. the second one
+    Here comes a timeout of about 1 minute, I'd like to know why.
+    4. ... (the remaining blocks)
+    Since the psion doesn't support writes behind the end of the file, I
+    drop blocks not yet written to the psion (with a warning message) after
+    a timeout of currently 2x15 seconds.
+    A workaround for this is to kill all biods :-( -> reads from other nfs
+    servers becomes possibly slower.
+
+PORTING:
+  To port p3nfsd to another architecture, take a look at:
+
+  mp_serial.c    for the serial drives setting
+  mp_mount.c     for the nfs mount (the amd source may help you)
+  config.h       for the defaults
+  pty.h          for the pseudo tty stuff.
+  Makefile	 the make command needs this one
+
+  Content of the files (should not have to be changed by a port):
+  mp.h:          Various defines
+  mp_inode.c:    the inode routines and the read/write cache routines.
+  mp_main.c
+  mp_mount.c:    nfs mount & rpc service start
+  mp_pfs_ops.c:  the nfs routines
+  mp_serial.c:   tty settings
+  mp_xmit.c      description of protocol used between the psion and the
+                 workstation; receive & send routines
+  crc.c          crc routines.
+  nfs_*:         all generated from nfs.x via rpcgen, withsome of them
+                 slightly modified to satiate the compiler warnings
+
+AT LAST:
+  This as a reminder for those who want to check for a newer version of
+  the nfsd, but have forgotten the address:
+  ftp.uni-erlangen.de:/pub/psion3/local/utilities

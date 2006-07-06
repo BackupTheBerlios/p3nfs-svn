@@ -1,0 +1,18 @@
+// Nfsapp.RSS
+//
+
+NAME NFSC
+
+#if defined(_EPOC32_6) || defined(_EPOC32_7)
+#include <eikon.rh>
+#else
+#include <eikdef.rh>
+#include <eikctrls.hrh>
+#endif
+
+#include <eikon.rsg>
+#include <e32keys.h>
+
+RESOURCE RSS_SIGNATURE { signature=20020517; }	// Version Number
+RESOURCE TBUF { buf=""; }
+RESOURCE EIK_APP_INFO { }

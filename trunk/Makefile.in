@@ -1,0 +1,47 @@
+# Makefile.in -- configure input for the top level makefile of p3nfs
+# 4.Jan.97, jw
+# 4.May.03, rudi
+#16.Okt.05, rudi (Remove s-bit, as suggested by Till Dörges)
+
+VERSION		= @VERSION@
+SHELL		= /bin/sh
+TARDIR		= p3nfs-$(VERSION)
+TARFILE		= p3nfs-$(VERSION).tar.gz
+PREFIX		= $(DESTDIR)/@prefix@
+BINDIR		= $(PREFIX)/bin
+DOCDIR		= $(PREFIX)/share/doc/p3nfs-$(VERSION)
+MANDIR		= $(PREFIX)/share/man/man1
+
+all clean distclean::
+	cd server; $(MAKE) $@
+	cd client/epoc32/nfsapp; $(MAKE) $@
+
+install::
+	mkdir -p $(BINDIR)
+	install server/p3nfsd $(BINDIR)
+	mkdir -p $(MANDIR)
+	cp doc/p3nfsd.1 $(MANDIR)
+	mkdir -p $(DOCDIR)
+	cp doc/* $(DOCDIR)
+	cp bin/*.sis client/*/opl/*.opl client/epoc16/nfsc/nfsc.app $(DOCDIR)
+
+
+uninstall::
+	rm -f $(BINDIR)/p3nfsd
+	rm -f $(MANDIR)/p3nfsd.1
+	rm -rf $(DOCDIR)
+
+tar dist::
+	$(MAKE) distclean
+	mkdir -p .dist/$(TARDIR)
+	cd .dist/$(TARDIR); ln -s ../../* .
+	cd .dist/$(TARDIR); rm -f Makefile; (echo 'all config depend clean:'; echo '	sh ./configure'; echo '	make $$@') > Makefile
+	cd .dist; tar cfh - $(TARDIR) | gzip > ../$(TARFILE)
+	rm -rf .dist
+
+distclean::
+	rm -f p3nfs-$(VERSION).tar.gz
+	rm -f Makefile server/Makefile utils/Makefile
+	rm -f client/epoc32/nfsapp/Makefile
+	rm -f config.cache config.status config.log *.orig
+	rm -f utils/p3nfs.spec doc/p3nfsd.1

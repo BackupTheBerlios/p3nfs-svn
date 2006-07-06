@@ -1,0 +1,63 @@
+#
+#	Psion nfsc (from the p3nfsc Package) termcap entry
+#
+nfsc|nfsc-am|Psion S3/S3a nfsc v4.0:\
+	:am:\
+	:mi:\
+	:ms:\
+	:xn:\
+	:co#80:\
+	:it#8:\
+	:li#20:\
+	:AL=\E[%dL:\
+	:DC=\E[%dP:\
+	:DL=\E[%dM:\
+	:DO=\E[%dB:\
+	:IC=\E[%d@:\
+	:LE=\E[%dD:\
+	:RI=\E[%dC:\
+	:UP=\E[%dA:\
+	:al=\E[L:\
+	:bl=^G:\
+	:bt=\E[Z:\
+	:cb=\E[1K:\
+	:cd=\E[J:\
+	:ce=\E[K:\
+	:cl=\E[H\E[J:\
+	:cm=\E[%i%d;%dH:\
+	:cr=\r:\
+	:cs=\E[%i%d;%dr:\
+	:ct=\E[3g:\
+	:dc=\E[P:\
+	:dl=\E[M:\
+	:do=^J:\
+	:ei=\E[4l:\
+	:ho=\E[H:\
+	:im=\E[4h:\
+	:kb=\b:\
+	:kd=\EOB:\
+	:ke=\E[?1l:\
+	:kl=\EOD:\
+	:kr=\EOC:\
+	:ks=\E[?1h:\
+	:ku=\EOA:\
+	:le=^H:\
+	:mb=\E[5m:\
+	:md=\E[1m:\
+	:me=\Em:\
+	:mr=\E[7m:\
+	:nd=\E[C:\
+	:nw=\EE:\
+	:r2=\Ec:\
+	:rc=\E8:\
+	:sc=\E7:\
+	:se=\E[m:\
+	:sf=\n:\
+	:so=\E[7m:\
+	:sr=\EM:\
+	:st=\EH:\
+	:ta=\t:\
+	:ue=\E[24m:\
+	:up=\E[A:\
+	:us=\E[4m:\
+

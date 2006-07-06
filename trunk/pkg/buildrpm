@@ -1,0 +1,41 @@
+#!/bin/bash
+
+source=.
+package=$source/../p3nfs-$VERSION.tar.gz
+packagedir=/usr/src/redhat
+
+# SuSE path
+if [ -d /usr/src/packages ]; then
+  packagedir=/usr/src/packages
+fi
+
+make -C .. clean
+make -C .. dist
+
+if [ ! -r $package ]; then
+  echo "Error: wrong package: $package"
+  exit 1
+fi
+
+cp -fv $package ${packagedir}/SOURCES
+
+if [ ! -r $source/buildrpm ]; then
+  echo "Error: invalid directory: $source"
+  exit 1
+fi
+
+if [ ! -d ${packagedir} ]; then
+  echo "Error: ${packagedir} directory not found"
+  exit 1
+fi
+
+if [ ! -r $source/p3nfs.spec ]; then
+  cd $source/..
+  ./configure
+  cd utils
+fi
+
+cp -fv $source/p3nfs.spec ${packagedir}/SPECS
+cd ${packagedir}/SPECS
+rpmbuild -ba p3nfs.spec
+cd ${packagedir}

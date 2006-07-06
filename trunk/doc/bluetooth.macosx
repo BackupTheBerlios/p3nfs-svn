@@ -1,0 +1,44 @@
+To connect your Mac to nfsapp through Bluetooth, you have first to
+create an outgoing Bluetooth serial port. To do this, use the
+"Bluetooth Serial Utility" found in Applications/Utilities. The port must
+be outgoing, and must be connected to the Serial Port service exported by
+your phone.
+
+Now, the problem is that the serial port just created will have its channel set
+to 1 (or some other value depending on the phone), and not the channel number
+used by nfsapp (which is 13 by default). This is because nfsapp does not
+advertise its channel number through the Bluetooth Service Discovery Protocol.
+So you have to force by hand the computer to use the right channel.
+
+To do this, you have to edit the file:
+   /var/root/Library/Preferences/blued.plist
+that you can access only as the root user. I suggest you to make a backup copy
+before actually changing the file. This file is a plain XML file containing
+the parameters used by the Bluetooth daemon 'blued' for configuring the
+communication channels.
+
+Within the file, you have first to locate a node containing:
+             <key>outgoing port - YOUR-PORT-NAME-HERE</key>
+(of course, you will find the name you gave to the port instead of 
+"YOUR-PORT-NAME-HERE"). Then, under that node you have to look for 
+a couple of lines saying:
+                     <key>BTRFCOMMChannel</key>
+                     <integer>1</integer>
+The actual number between <integer> and </integer> can be different, depending
+on the phone. Now you have to change this value to the channel number used
+by nfsapp (you can read it on the phone when you launch nfsapp). So the
+lines should read (assuming that the nfsapp channel has the default value of
+13):
+                     <key>BTRFCOMMChannel</key>
+                     <integer>13</integer>
+
+Be careful to not alter the BTRFCOMMChannel of other services listed in
+blued.plist!
+
+Now, you have to save the file and restart your system. Having done that,
+you can follow the directions for starting p3nfsd, using as TTY the device:
+		/dev/cu.YOUR-PORT-NAME-HERE
+
+For example, I use the following command line for my Sony Ericsson P910i:
+            p3nfsd -UIQ -tty /dev/cu.P910i -dir /mnt/P910i
+

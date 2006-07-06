@@ -1,0 +1,10 @@
+# Do:
+# cd ..
+# ./configure
+# make tar
+# mv p3nfs-<version>.tar.gz pkg
+# cd pkg
+# md5sum p3nfs*.gz
+# enter this sum innto the PKGBUILD file
+# makepkg
+# rm -rf pkg src

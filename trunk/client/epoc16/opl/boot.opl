@@ -1,0 +1,42 @@
+REM This file should be typed in, then on the linux side simply copy the file
+REM sleep 1000 > /dev/ttyS0 &
+REM stty crtscts 19200 < /dev/ttyS0
+REM cat nfsc3a > /dev/ttyS0
+REM now stop the sleep 1000
+
+PROC transmit:
+	local buf$(255), wh%, len%, i%, j%
+
+	lopen "TTY:A"
+	rsset:(16,0,8,1,0,&0)
+	
+	i% = ioopen(wh%, "LOC::M:\OPL\NFS3A.OPL", $302)
+	if i% : raise i% : endif
+	
+	len%=5420
+	print "Starting"
+	while len%
+		i% = len% : if i% > 250 : i% = 250 : endif
+		iow(-1,1, #addr(buf$), i%)
+		iowrite(wh%, addr(buf$), i%)
+		
+		len% = len% - i%
+		print "r";
+	endwh
+	ioclose(wh%)
+ENDP
+
+proc rsset:(bd%, par%, db%, st%, hand%, term&)
+	local fr%, sr%(6), dm%, err%
+	
+	fr%=db%-5
+	if st% = 2 : fr%=16 : endif
+	if par% : fr%=fr% or 32 : endif
+	sr%(1) = bd% or (bd% * 256)
+	sr%(2) = fr% or (par% * 256)
+	sr%(3) = (hand% and 255) or $1100
+	sr%(4) = $13
+	pokel addr(sr%(5)), term&
+	err%=iow(-1,7,sr%(1),dm%)
+	if err% : raise err% : endif
+endp

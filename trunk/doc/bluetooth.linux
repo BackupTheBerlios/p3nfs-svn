@@ -1,0 +1,71 @@
+HOWTO enable bluetooth on a linux device in order to get p3nfsd use it.
+
+
+1. Download (and install) the needed software
+   - bluez-libs
+   - bluez-utils
+   Further you need the bluez drivers which are part of any kernel >= 2.4.20.
+
+2. Enable bluetooth on the symbian device in the System Settings.
+
+3. Get the Bluetooth device address of the phone:
+   e.g. with hcitool inq. Switch to bluetooth mode in nfsclient (see
+   below on how), and remember the rfcomm port. It should be 13.
+
+4. Establish a potential bluetooth connection with rfcomm (as root)
+   # rfcomm bind /dev/rfcomm0 <BDADDR> 13
+   - You can verify the rfcomm state by calling rfcomm without arguments
+   - The last argument (port) must correspond to the number shown by
+     nfsclient on the device.
+
+5. Check that /dev/rfcomm0 (or the like, like, see your /dev) exists:
+   crw-rw-rw-    1 root     root     216,   0 Jan 26 17:32 /dev/rfcomm0
+
+   Note: If you do _NOT_ have devfs/udev/somthing-like-this (where the devices
+   will be created as soon as the corresponding driver is loaded), then you
+   have to create this file with:
+     mknod /dev/rfcomm0 c 216 0
+
+6. First time device connection / Bluetooth PIN
+   You may need to enter a pin.
+   As entering the pin on the Linux side does not seem to work, I had success
+   with the following workaround:
+   Change /bin/bluepin to:
+     #!/bin/sh
+     cat /etc/bluetooth/pin
+   and /etc/bluetooth/pin to
+     PIN:0000
+   Now you can type 0000 on the phone as it requests the PIN.
+
+7. Start nfsapp on the Symbian device and
+   switch to bluetooth.
+   - Series60: by pressing the joystick (or 'p').
+   - UIQ: by scrolling with the jogdial one position down
+
+8. Start p3nfsd with 
+   % p3nfsd -series60 -tty /dev/rfcomm0
+   or
+   % p3nfsd -UIQ -tty /dev/rfcomm0
+
+   There is no difference at the moment between these settings as you
+   can verify it with:
+
+   % p3nfsd -series60 -tty /dev/rfcomm0 -h
+     or
+   % p3nfsd -UIQ -tty /dev/rfcomm0 -h
+
+Shortcuts:
+  Series60:
+  - Pressing the joystick switches to the next interface.
+  - Pressing the right button exits the program
+  UIQ:
+  - Scrolling one position down: switches the interface
+  - Scrolling one position up: debug level is increased
+  - Pressing the jogdial: exit
+
+General notes:
+  - If the bluetooth connection is terminated, than the
+    p3nfs daemon will terminate too.
+  - The current nfsclient will reopen the bluetooth server port.
+  - Parallel operations are not supported well (BUG?), so instead of
+    "cp *" try tar, cpio or the like.

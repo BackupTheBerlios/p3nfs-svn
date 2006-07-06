@@ -1,0 +1,18 @@
+pkgname=p3nfs
+pkgver=5.19
+pkgrel=1
+pkgdesc="Mount Epoc / SymbianOS filesystems"
+url="http://www.koeniglich.de/p3nfs.html"
+makedepends=('bash' 'gcc')
+depends=('glibc')
+#source=(http://www.koeniglich.de/packages/$pkgname-$pkgver.tar.gz)
+source=($pkgname-$pkgver.tar.gz)
+md5sums=('f27a56f59f814c3984fb30cadc6199c9')
+
+build() {
+cd $startdir/src/$pkgname-$pkgver
+./configure
+make || return 1
+make DESTDIR=$startdir/pkg install
+}
+

@@ -1,0 +1,130 @@
+This document describes how to use p3nfs over the P800/P900 USB cradle.
+Read it also, if you wish to set up a TCP/IP connection between your
+mrouter enabled client (Series60, UIQ/P800) and your Unix machine.
+
+A: Installation
+---------------
+
+1. Setup the USB connection to the P800 cradle
+  You only need to read this "chapter", if after inserting the cradle
+  usbview won't report a serial device.
+
+  There are at least two different versions of the cradle, one with
+  the Prolific PL2303 chip, and one with a Future Technology Devices
+  chip.
+
+  - The Future Technology Devices chip seems to have problems with PPP/chat,
+    but its working with cu, please tell me if you found a solution on how
+    to get it working.
+  - The PL2303 is only recognized in Linux kernel version >= 2.4.21,
+    if you have an earlier kernel, please apply the patch between the
+    dashes, recompile the modules and reboot or restart the usb subsystem. 
+
+------------------------------------------------------------------------------
+diff -Nru drivers/usb/serial/pl2303.c /usr/src/test/linux-2.4.20/drivers/usb/serial/pl2303.c
+--- drivers/usb/serial/pl2303.c 2002-11-29 00:53:15.000000000 +0100
++++ /usr/src/test/linux-2.4.20/drivers/usb/serial/pl2303.c      2003-03-17 22:21:51.000000000
++0100
+@@ -69,6 +69,7 @@
+        { USB_DEVICE(ELCOM_VENDOR_ID, ELCOM_PRODUCT_ID) },
+        { USB_DEVICE(ITEGNO_VENDOR_ID, ITEGNO_PRODUCT_ID) },
+        { USB_DEVICE(MA620_VENDOR_ID, MA620_PRODUCT_ID) },
++       { USB_DEVICE(DCU10_VENDOR_ID, DCU10_PRODUCT_ID) },
+        { }                                     /* Terminating entry */
+ };
+ 
+diff -Nru drivers/usb/serial/pl2303.h /usr/src/test/linux-2.4.20/drivers/usb/serial/pl2303.h
+--- drivers/usb/serial/pl2303.h 2002-11-29 00:53:15.000000000 +0100
++++ /usr/src/test/linux-2.4.20/drivers/usb/serial/pl2303.h      2003-03-17 22:21:37.000000000
++0100
+@@ -25,3 +25,6 @@
+ 
+ #define MA620_VENDOR_ID                0x0df7
+ #define MA620_PRODUCT_ID       0x0620
++
++#define DCU10_VENDOR_ID                0x0731
++#define DCU10_PRODUCT_ID       0x0528
+-----------------------------------------------------------
+
+  - On a plain Redhat 7.3 machine USB is configured all the time. If not:
+    /etc/rc.d/init.d/usb start
+
+  - Connect the P800 cradle and verify it with usbview, a serial device 
+    should be present. (For the pl2302 chip: Vendor Id 0731, Product Id 0528,
+    for the FTDI chip: 0403:fc82).
+
+
+2. Setup DNS for wsockhost.mrouter
+------------------------------------------
+
+   If this is not set up, the PPP connection will be terminated by the P800
+   after 100 seconds :-/
+
+    - add following lines to /etc/named.conf
+      (without the dashes):
+      --------------------
+      zone "mrouter" {
+	      type master;
+	      notify no;
+	      file "mrouter";
+      };
+      --------------------
+
+    - create a file called mrouter in /var/named (or wherever your directory
+      option points to):
+      (without the dashes):
+      --------------------
+      ; Zone file for wsockhost.mrouter, needed by the mrouter software on
+      ; newer SymbianOS phones (e.g. P800)
+      ;
+      $TTL 86400
+      @       IN      SOA     ns.mrouter. root.mrouter. (
+			      200306011       ; serial:date + serial#
+			      28800           ; refresh, seconds
+			      14400           ; retry, seconds
+			      3600000         ; expire, seconds
+			      86400 )         ; minimum, seconds
+      ;
+		      NS      ns              ; Inet Address of name server
+      ;
+      ns              A       169.254.1.68
+      wsockhost       A       169.254.1.68
+      --------------------
+
+3. Setup ppp
+------------
+
+  - create /etc/ppp/peers/p800-usb, with the following content
+    (without the dashes):
+    --------------------
+    connect "/usr/sbin/chat -t 90 -v -f /etc/ppp/peers/p800.chat"
+    noauth user ppp crtscts lock local proxyarp passive silent
+    ms-dns 169.254.1.68 ipcp-accept-local ipcp-accept-remote
+    460800 /dev/ttyUSB0 169.254.1.68:169.254.1.1
+    --------------------
+
+  - Note: I got better results with baud rate 115200 (you have to set it on
+    the P800 and in the above file), but I couldn't connect to the P800
+    with 230400.
+
+  - create /etc/ppp/peers/p800.chat, with the following content
+    (without the dashes):
+    --------------------
+    "" "." "Are you there?~" "~mRouter - I'm here~"
+    --------------------
+
+
+B: Start
+--------
+
+1. Attach the cradle.
+2. Start ppp
+     /usr/sbin/pppd call p800-usb
+   Wait till the connection is established.
+   This may take a while (up to 30 seconds), watch your /var/log/messages
+3. Start (or restart) named:
+   /etc/init.d/named start
+4. Start p3nfsd
+   p3nfsd -UIQ -tcp
+5. Start nfsapp on the p800 & switch to tcp mode (by turning the jogdial down
+   3 times)
