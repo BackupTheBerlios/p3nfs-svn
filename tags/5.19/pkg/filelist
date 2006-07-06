@@ -1,0 +1,8 @@
+.FILELIST
+.PKGINFO
+usr/
+usr/bin/
+usr/bin/p3nfsd
+usr/man/
+usr/man/man1/
+usr/man/man1/p3nfsd.1.gz

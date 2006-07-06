@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="vim">
+   <TITLE>P3nfs</TITLE>
+   <LINK REL="SHORTCUT ICON" HREF="http://www.koeniglich.de/favicon.ico">
+<header>
+</header>
+</HEAD>
+
+<BR>
+<UL>	<B><FONT SIZE=+2>P3nfs</FONT></B><br>
+<BR>
+
+	<b>Description:</b><br>
+	<UL>
+	P3nfsd is a Symbian (Psion/Nokia/Sony-Ericsson/etc) to UNIX/Linux
+	communication program. It allows you to mount the file systems of the
+	Phone/PDA on your UNIX machine. This means that you see all the
+	filesystems of the Phone/PDA as a filesystem on your UNIX machine, and
+	you can copy/backup/edit any file on the Phone/PDA with your preferred
+	tools on the UNIX machine.<br>
+	<b>Notes:</b>
+	<ul>
+	  <li>The NFS protocol is only used between the server and the
+	  OS, the server and the client on the deivce talk a primitive
+	  proprietary protocol.</li>
+
+	  <li>Since some files on the phones are opened exclusively by
+	  applications (Calendar/etc), these files cannot be read. p3nfs
+	  right now is not the tool of choice for backuping phones</li>
+
+	</ul>
+	<br>
+	<br>
+	</UL>
+
+	<b>News</b>
+	<UL>
+
+	Version 5.19  (2005-10-19):<ul>
+	  <li> Motorola/P800 keys are working again in nfsapp.
+	      (Thanks for Marek K. for the hint)</li>
+	  <li> Fixed compile errors for kernel >= 2.6.11</li>
+	  <li> MacOS X (Panther) port by Pasquale Foggia.
+	       I hope it works, as I cannot verify it.</li>
+	  <li> Series 60 OS 8.0 phones should work again. OS 8.0 changed
+	       the executable magic...</li>
+	  <li> Nfsclient client fix from Pasquale Foggia (checking the return
+               codes of open and stat when reading data)
+	  <li> The bluetooth server port on the client will be reopened,
+	       so there is no need to manually restart it.
+	  <li> Opened a <a href="http://p3nfs.berlios.de">Berlios</a> project.
+	       This should give you access to the unreleased version via SVN,
+	       a wiki, a bug database and a feature request databasse. The
+	       group will remain a <a
+	       href="http://groups-beta.google.com/group/p3nfs-users">
+	       google-group</a></li>
+	  <li> Restructured / revisited the documentation</li>
+	  <li> Retested p3nfs on the following clients:<br>
+	       Psion 5MX, Nokia 7650, 6600, 6800, 9210, 9500, SE P800, P910<br>
+	       Note: Not all possible connection combinations were tested
+	       on these devices, so there is still the possibility of bugs.
+	       </li>
+	  </ul>
+
+	Version 5.18  (2005-05-05):<ul>
+	  <li> Thanks to Tim we have a <a
+	  href="http://groups-beta.google.com/group/p3nfs-users">newsgroup</a>
+	  </li>
+
+	  <li> From now on nfsclient/nfsapp is using the same version
+	  as p3nfsd. Don't get excited from the huge version change:
+	  nfsapp 2.09 and 5.18 are the same.</li>
+	  </ul>
+
+	See <a href="p3nfs/CHANGES">CHANGES</a> for older news.<br>
+	</UL>
+	<br>
+
+	<b>Supported devices:</b><br>
+	<UL>
+	  <li>Series 60 phones over infrared, bluetooth or TCP/IP over the air.<br>
+	      Example devices: Nokia 6680,6600,7650,N-Gage
+	      </li><br>
+
+	  <li>Series 80 phones over cable, infrared, bluetooth, TCP/IP over wlan or
+	      over the air<br>
+	      Devices: Nokia Communicator 92x0/9300/9500
+	      </li><br>
+
+	  <li>UIQ phones over infrared, bluetooth, TCP/IP over the USB cable (P800) or
+	      over the air.<br>
+	      Devices: Sony Ericsson P800, P900, P910, Motorola A920, BenQ P30)
+              </li><br>
+
+	  <li>Psion PDA's over cable or infrared<br>
+	      Example devices: Psion 5/5mx/netBook/revo
+	      </li><br>
+
+	  <li>EPOC16 devices over cable<br>
+	      Example devices: Psion 3/3a/3c/3mx
+	      </li><br>
+	</UL>
+	<br>
+
+	<b>Download:</b> <br>
+	<ul>
+	<li>Server packages:<br>
+	   <ul>
+	   <li> The sources: <a href="packages/p3nfs-5.19.tar.gz">
+		p3nfs-5.19.tar.gz</a><br>
+		Note1: it contains all the client binaries too.<br>
+		Note2: to build these client binaries you'll need sdk2unix 1.7 or
+		greater, see below for the link.<br>
+		</li>
+	   <li><a href="packages/p3nfs-5.19-1.pkg.tar.gz">p3nfs-5.19-1.pkg.tar.gz</a>
+		(ARCH Linux package / p3nfs binary only)</li>
+	   </li><br>
+	   </ul>
+	<li>Client binaries:<br>
+	   These are here so you can download the correct .SIS file directly to your phone.
+	   <br><br>
+	   <ul>
+	   <li><a href="packages/nfsapp-5.19-series60.v1.noirda.sis">
+	       nfsapp-5.19-series60-v1.noirda.sis</a> for the Nokia NGage, NGage-QD
+	       </li><br>
+	   <li><a href="packages/nfsapp-5.19-series60.v1.sis">
+	       nfsapp-5.19.series60-v1.sis</a> for the Nokia 7650, 3650, 6600, etc.
+	       (Symbian OS 6.1, 7.0, 7.0s)
+	       </li><br>
+	   <li><a href="packages/nfsapp-5.19-series60.v2.sis">
+	       nfsapp-5.19-series60.v2.sis</a> for the Nokia 6630, 6680, etc.
+	       (Symbian OS >= 8.0)
+	       </li><br>
+	   <li><a href="packages/nfsapp-5.19-series80.v1.sis">
+	       nfsapp-5.19-series80.v1.sis</a> for the Communicator 92x0.
+	       </li><br>
+	   <li><a href="packages/nfsapp-5.19-series80.v2.sis">
+	       nfsapp-5.19-series80.v2.sis</a> for the Communicator 9300/9500
+	       </li><br>
+	   <li><a href="packages/nfsapp-5.19-UIQ.v2.sis">
+	       nfsapp-5.19-UIQ.v2.sis</a> for the SE P800/P900/P910, Motorola A920, etc.
+	       </li><br>
+	   </ul>
+	</ul>
+	<br>
+
+	<B>Our links:</B>
+	<ul>
+	<li>The <a 
+	    href="http://groups-beta.google.com/group/p3nfs-users">
+	    newsgroup</a><br></li>
+	<li>The <a 
+	    href="http://p3nfs.brelios.de">
+	    Berlios CVS</a> repository<br></li>
+	</ul>
+	<br>
+
+	<B>Other links:</B>
+	<ul>
+
+	<li><a href="http://www.koeniglich.de/symbian_sdk_on_unix.html">
+		Symbian C++ SDK on Linux Howto.</a><br>
+		You can do without it, as a binary .sis file is included for
+		all client types in the p3nfs package</li>
+
+	<li><a href="http://gnubox.dnsalias.org/gnubox/">GnuBox</a>:
+	    establish a TCP/IP connection, usable with p3nfs too<br></li>
+
+	<li><a href="http://sourceforge.net/projects/plptools/">
+		plptools</a> for Epoc32 R5 devices (no need for a client)</li>
+
+	<li><a
+	     href="http://www.bwestermann.privat.t-online.de/3650linux_en.html">
+	     TCP/IP connection between Series60 phones and Linux</a></li>
+	<li><a href="http://www.gagravarr.org/series-60">
+		Series60 phones and Linux</a></li>
+	<li><a href="http://mobile.linux.pt/p800/">
+		P800 and Linux</a></li>
+	</ul>
+	<br>
+
+</UL>
+</UL>
+
+<UL>	<B><FONT SIZE=+1>Nfsc</FONT></B>
+<BR>
+<UL>
+	Nfsc is a VT100 terminal emulator for the Psion Series 3 (i.e.
+	3/3a/3c/3mx &amp; Sienna) palmtops.<br>
+	<A HREF="pics/nfsc.gif">Here</A> is a screen dump from the current
+	version.<br>Nfsc can also be used as a frontend for p3nfsd
+	(see above).<BR>
+	Download: <A HREF="packages/nfsc-5.4.zip">nfsc 5.4</a><br><br>
+</UL>
+</BODY>
+</HTML>

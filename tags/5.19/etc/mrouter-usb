@@ -1,0 +1,16 @@
+connect "/usr/sbin/chat -t 90 -v -f /etc/ppp/peers/mrouter.chat"
+noauth
+user ppp
+crtscts
+lock
+local
+proxyarp
+passive
+silent
+
+ipcp-accept-local
+ipcp-accept-remote
+
+460800
+/dev/ttyUSB0 
+169.254.1.68:169.254.1.1

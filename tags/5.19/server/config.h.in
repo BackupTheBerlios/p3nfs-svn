@@ -1,0 +1,13 @@
+/*
+ * config.h.in -- do not touch. 
+ * configure should do most of the work for you.
+ */
+
+#include "defs.h"	/* what was formerly in config.h */
+
+#undef HAVE_SYS_IOCTL_H
+#undef HAVE_SYS_ERRNO_H
+#undef HAVE_SYS_TTOLD_H
+#undef HAVE_STDLIB_H
+
+#undef HAVE_STRERROR

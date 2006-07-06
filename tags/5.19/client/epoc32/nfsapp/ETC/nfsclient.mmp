@@ -1,0 +1,11 @@
+/**
+ * @file nfsclient.mmp
+ * OUTDATED, use the makefiles
+ */
+
+TARGET        nfsclient.exe
+TARGETTYPE    exe
+SOURCE        nfsclient.cpp
+SYSTEMINCLUDE \epoc32\include
+LIBRARY       euser.lib efsrv.lib ws32.lib c32.lib
+LIBRARY       plpremlink.lib

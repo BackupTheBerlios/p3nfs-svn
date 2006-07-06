@@ -1,0 +1,29 @@
+Psion				PC		Read(Psion)	Write(Psion)
+-----------------------------------------------------------------------------
+ObeyXoff|SendXoff		none		Ok		Blocked
+ObeyXoff|SendXoff		xon/xoff	Ok		Blocked
+ObeyXoff|SendXoff		rts/cts		Ok		Blocked
+ObeyXoff			rts/cts		Ok		Ok
+SendXoff			rts/cts		Ok		Blocked
+ObeyCTS				rts/cts		Ok		Ok
+FreeRTS				rts/cts		Ok		Ok
+FailDSR				rts/cts		Ok		Ok
+FailDSR				xon/xoff	Ok		Ok
+ObeyCTS				xon/xoff	Ok		Ok
+FreeRTS				xon/xoff	Ok		Ok
+ObeyCTS|FreeRTS			rts/cts		Ok		Ok
+ObeyCTS|FreeRTS			xon/xoff	Ok		Ok
+
+Nokia				PC		Read(Psion)	Write(Psion)
+-----------------------------------------------------------------------------
+ObeyXoff|SendXoff		none		Ok		Ok
+ObeyXoff|SendXoff		xon/xoff	Ok		Ok	Ok		Blocked
+ObeyXoff|SendXoff		rts/cts		Ok		Ok
+ObeyXoff			rts/cts		Ok		Ok
+SendXoff			rts/cts		Ok		Ok
+ObeyCTS				rts/cts		Ok		Blocked
+FreeRTS				rts/cts		Ok		Ok
+FailDSR				rts/cts		Ok		Ok
+FailDSR				xon/xoff	Ok		Ok
+ObeyCTS				xon/xoff	Ok		Blocked
+FreeRTS				xon/xoff	Ok		Blocked

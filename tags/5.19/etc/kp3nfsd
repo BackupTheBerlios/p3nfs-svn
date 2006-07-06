@@ -1,0 +1,79 @@
+#!/bin/bash
+# ========================================================================
+# kp3nfsd
+# ========================================================================
+#
+# Script to serial connect bluetooth device and
+# start p3nfsd in kde.
+#
+# ========================================================================
+#
+# @author Jan Sonnenberg
+# @version 0.1
+#
+# This file is copyright (C) 2005 Jan Sonnenberg.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License, version 2,
+# as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+
+
+# ======================== Adapt Settings here: =========================
+
+## ====== Serial device to use for connection. ==========================
+## e.g. /dev/rfcomm0 for bluetooth  or /dev/ircomm0 for infrared.
+## Device must exist and be configured properly.
+BT_SERIAL_DEV=/dev/rfcomm0		
+# BT_SERIAL_DEV=/dev/ircomm0
+
+## ====== Bluetooth address of your device. =============================
+## Bluetooth address of your device, get it with e.g. 'hcitool inq'
+## or 'hcitool scan'
+BT_ADDRESS=13:37:CA:FE:BA:BE
+
+## ====== Bluetooth port for p3nfs. =====================================
+## Must correspond to the number shown by nfsclient on the device.
+BT_PORT=11
+# BT_PORT=13
+
+## ====== Local mount point. ============================================
+## Make it user accesible with e.g. 'chown foo.foo /mnt/foo'.
+BT_MNT_POINT=/media/handy
+
+## ====== The type of your device. ======================================
+# P3NFS_DEV_TYPE=series3
+# P3NFS_DEV_TYPE=series3a
+# P3NFS_DEV_TYPE=series5
+P3NFS_DEV_TYPE=series60
+# P3NFS_DEV_TYPE=n9210
+# P3NFS_DEV_TYPE=UIQ
+
+
+# ##################################################################
+# =========== users: don't change anything below here. =============
+
+# test, if device is already mounted
+grep -q "$BT_MNT_POINT" /etc/mtab
+if [[ $? -eq 0 ]]
+	then
+	konqueror $BT_MNT_POINT
+else
+	kdesu -c "/etc/init.d/portmap start && rfcomm bind $BT_SERIAL_DEV $BT_ADDRESS $BT_PORT"
+	p3nfsd -$P3NFS_DEV_TYPE -tty $BT_SERIAL_DEV -dir $BT_MNT_POINT
+	if [[ $? -le 0 ]] 
+		then 
+		konqueror $BT_MNT_POINT
+	else 
+		kdialog --error "Couldn't mount device."
+	fi
+fi

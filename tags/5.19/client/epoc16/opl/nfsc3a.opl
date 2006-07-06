@@ -1,0 +1,230 @@
+REM nfsc ¸1994 Rudolf K”nig
+REM nfsc has to be distributed under
+REM the GNU Copyleft (Version 2)
+REM Please send email to jnweiger@immd4.informatik.uni-erlangen.de
+
+REM uadd by Volker Lausch <volli@cs.tu-berlin.de>
+
+REM Invoke p3nfsd with "-oldnfsc"
+REM To use with Infrared, change "TTY:A" to "TTY:I", remove call to "rsset"
+REM and include "rem" line below. (by Richard Johnson)
+
+
+proc transmit:
+	local dirnam$(255),hdr$(255),rname$(255),buf$(250)
+	local i%, ret%, cmd%, len%, hdradr%, statadr%
+	local roff&, size&, rh%, stat$(16), st2$(16), st2adr%
+	local wh%, dowr%, off&, dv$(5,7), dev$(8), maxdev%
+
+	lopen "TTY:A" 
+	rsset:(16, 0, 8, 1, 0, &0)
+
+	dv$(1) = "LOC::M:"
+	dv$(2) = "LOC::A:"
+	dv$(3) = "LOC::B:"
+	dv$(4) = "ROM::"
+	dv$(5) = "LOC::C:"
+	maxdev% = 3
+
+	hdradr% = addr(hdr$) : st2adr% = addr(st2$)
+	pokeb addr(stat$), 12
+
+	print "Welcome to nfsc, version 2.0 beta, pl10"
+	while 1
+		len% = 0 : cmd% = 1
+		iow(-1, 1, #uadd(addr(len%),0), cmd%)
+REM For infrared, uncomment the following line:
+REM             if len% = 255 : continue : endif
+		ret% = iow(-1, 1, #uadd(hdradr%,0), len%)
+		if ret%
+		  if ret% = -57
+		    print "@";
+		    continue
+		  endif
+		  raise ret%
+		  stop
+		endif
+rem print "Got:";peekb(hdradr%+len%-1),hdr$,
+		ret% = 7
+		vector peekb(hdradr%+len%-1)
+			creat, gattr, mkd,  read
+			rdir,  remv,  renm, rmd
+			sattr, write, getd, statd
+		endv
+		lprint chr$(1); : print "X";
+		continue
+
+sattr::
+		ret% = call($987, hdradr%+1, $f2f, 0,0,hdradr%+len%-3)
+		lprint chr$(ret%); : print "s";
+		continue
+
+renm::
+		len% = peekb(hdradr%+len%-2)
+		iow(-1,1,#uadd(addr(dirnam$),0),len%)
+		trap rename hdr$, dirnam$
+		lprint chr$(err); : print "n";
+		continue
+
+remv::
+		trap delete hdr$
+		lprint chr$(err); : print "d";
+		continue
+
+rmd::
+		trap rmdir hdr$ : print "z";
+		lprint chr$(err);
+		continue
+
+mkd::
+		trap mkdir hdr$ : print "m";
+		lprint chr$(err);
+		continue
+
+creat::
+		ret% = ioopen(i%, hdr$, 2)
+		if ret%
+			lprint chr$(ret%); : print "C";
+		else
+			lprint chr$(0); : print "c";
+			ioclose(i%)
+		endif
+		continue
+
+write::
+		off& = peekl(hdradr%+len%-7)
+		len% = peekw(hdradr%+len%-3)
+
+		dowr% = 1
+		ret% = ioopen(wh%, hdr$, $300)
+		if ret% : dowr% = 0 : endif
+		if dowr% and (off& > 0)
+			ret% = ioseek(wh%, 1, off&)
+			if ret% : dowr% = 0 : endif
+		endif
+
+		while len%
+			i% = len% : if i% > 250 : i% = 250 : endif
+			iow(-1,1,#uadd(addr(buf$),1),i%)
+			if dowr%
+				ret% = iowrite(wh%, uadd(addr(buf$),1), i%)
+				if ret% : dowr% = 0 : ioclose(wh%) : endif
+			endif
+			len% = len% - i%
+		endwh
+
+		if dowr%
+			lprint chr$(0); : print "w";
+			ioclose(wh%)
+		else
+			lprint chr$(ret%); : print "W";
+		endif
+		continue
+
+read::
+		off& = peekl(hdradr%+len%-7)
+		len% = peekw(hdradr%+len%-3)
+
+		ret% = call($887, hdradr%+1, addr(stat$)+1, 0, 0, 0)
+		if ret%
+			lprint chr$(ret%); : print "R"; : continue
+		endif
+		if rname$ <> hdr$
+			if rh% : ioclose(rh%) : roff& = 0 : endif
+			ret% = ioopen(rh%, hdr$, $600)
+			if ret%
+				lprint chr$(ret%); : print "R";
+				hdr$ = "" : continue
+			endif
+			rname$ = hdr$
+		endif
+		size& = peekl(addr(stat$)+5)
+		if off& > size& : off& = size& : endif
+		if roff& <> off&
+			if ioseek(rh%, 1, off&)
+				lprint chr$(1); : continue
+			endif
+			roff& = off&
+		endif
+		if off& + len% > size& : len% = size& - off& : endif
+		if len% < 0 : len% = 0 : endif
+		lprint chr$(0);stat$; : print "r";
+
+		while len% > 0
+			i% = len% : if i% > 250 : i% = 250 : endif
+			ret% = ioread(rh%, uadd(addr(buf$),1), i%)
+			roff& = roff& + ret% : len% = len% - ret%
+			pokeb addr(buf$),ret% : lprint buf$;
+			if ret% <> i% : break : endif
+		endwh
+		if roff& = peekl(addr(stat$)+5)
+			ioclose(rh%) : rname$ = "" : roff& = 0 : rh% = 0
+		endif
+		continue
+
+gattr::
+		ret% = call($887, hdradr%+1, addr(stat$)+1, 0, 0, 0)
+		if ret%
+			lprint chr$(ret%); : print "G";
+		else
+			if peekb(addr(stat$)+3) and 16
+statd::
+				rem damned filesystem without linkcount :(
+				i% = 0
+				hdr$=dir$(hdr$+"\")+chr$(0) 
+				while hdr$ <> chr$(0)
+					call($887, hdradr%+1, st2adr%+1, 0, 0, 0)
+					if peekb(st2adr%+3) and 16 : i% = i% + 1 : endif
+					hdr$=dir$("")+chr$(0)
+				endwh
+				pokew addr(stat$)+1, i%
+				if ret% = 7 : lprint chr$(0);stat$; : print "f"; : continue : endif
+			endif
+			lprint chr$(0);stat$; : print "g";
+		endif
+		continue
+
+rdir::
+		lprint chr$(0); : print "l";
+		dirnam$=dir$(hdr$) : lprint dirnam$;chr$(0);
+		while dirnam$ <> ""
+			dirnam$=dir$("") : lprint dirnam$;chr$(0);
+		endwh
+		continue
+
+getd::
+		i% = 1 : lprint chr$(0); : pokeb addr(buf$), 14
+		while i% <= maxdev%
+			dev$ = dv$(i%)+chr$(0)
+			ret% = call($a87, addr(dev$)+1, addr(buf$)+1, 0, 0, 0)
+			if ret% = 0: lprint dv$(i%);chr$(0);buf$; : endif
+			i% = i% + 1
+		endwh
+		lprint chr$(0); : print ">";
+		continue
+
+	endwh
+endp
+
+PROC rsset:(bd%, par%, db%, st%, hand%, term&)
+	local fr%, sr%(6), dm%, err%
+	
+	fr% = db%-5
+	if st% = 2 : fr% = 16 : endif
+	if par% : fr% = fr% or 32 : endif
+	sr%(1) = bd% or (bd%*256)
+	sr%(2) = fr% or (par% * 256)
+	sr%(3) = (hand% and 255) or $1100
+	sr%(4) = $13
+	pokel addr(sr%(5)), term&
+	err%=iow(-1,7,sr%(1),dm%)
+	if err% : raise err% : endif
+ENDP
+
+PROC myuadd%:(ad%, of%)
+  LOCAL a&, o&, r%
+  a&=IABS(INT(ad%))
+  o&=IABS(INT(of%))
+  r%=a&+o&
+  RETURN r%
+ENDP

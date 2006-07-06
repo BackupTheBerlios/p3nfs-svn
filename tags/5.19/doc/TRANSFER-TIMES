@@ -1,0 +1,29 @@
+Using nfsapp, measuring with a 400kb file.
+
+Version 5.11
+------------
+
+                 Read(B/s) Write(B/s) Comment
+5MX/Cable:       9150      9250
+5MX/Irda:        5093      5669       Read/Write: Framing errors
+
+Nokia 9210/Cable 6173      6086
+Nokia 9210/Irda  4188      4071       Read/Write: Framing errors / aborts
+
+Nokia 7650/Irda  4772      6528       Read: framing errors
+
+IrOBEX
+Nokia 7650       N/A       7756       Using irobex_palm3
+Nokia 9210       3587      6403       Using irxfer/irobex_palm3
+
+Version 5.13
+------------
+P800/USB         1223      4622       -timeout 16000, Baud: 460800
+P800/USB                              Baud: 230400 -> no ppp connection
+P800/USB         7636      5732       -timeout 16000, Baud: 115200
+P800/IrDA        9186      9186       Using SIR on Linux
+P800/Bluetooth   9496     32337
+
+N7650/Bluetooth 34191     31217       Can unexpectedly fall down to 5k/sec
+N7650/IrDA       9034      9763       Using SIR, close error on write(?)
+N7650/Bt/TcpIp  21841     22951       (Measured by B.Westermann)

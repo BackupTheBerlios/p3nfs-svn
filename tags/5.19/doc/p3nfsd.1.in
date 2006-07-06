@@ -1,0 +1,184 @@
+.TH P3NFSD 1 "04 June 2003"
+.SH NAME
+p3nfsd \- Mount Epoc / SymbianOS filesystems
+.SH SYNOPSIS
+.B p3nfsd <client-type> [ options ]
+
+.SH DESCRIPTION
+.B p3nfsd
+makes the filesystems of most 
+.I SymbianOS
+based PDAs and phones available to an attached Unix computer.
+.B p3nfs
+talks to the local UNIX machine via NFS,
+and uses its own protocol to talk with its client program on the PDA/phone.
+The connection can be established via a Serial cable, IrDA, Bluetooth or USB.
+.PP
+As first option you have to define the client type to connect. These options
+preconfigure p3nfs for the corresponding device, in most cases you won't need
+further options. To list the preconfigures options type
+.B p3nfsd <client-type> -h
+
+.SH PDA/Phone counterparts
+P3nfsd needs a client program on the PDA/Phone.
+Depending on the PDA/Phone you have, you have different options, read the
+.B CLIENT-TYPE
+section for details.
+These programs can be found
+along with the detailed HOWTOs in the documentation directory, which is
+@prefix@/share/doc/p3nfs-@VERSION@
+
+.SH CLIENT-TYPE
+In most cases you only have to specify the client type, p3nfsd tries to set the
+correct parameters for this client. Type p3nfsd <client-type>
+.B -h
+to see the defaults for this client-type.
+.TP
+.B -series3
+for Psion Series 3. See
+.I /usr/share/doc/p3nfs/Epoc16
+for a more detailed HOWTO. As client you have to use
+.B nfsc3.opl
+.TP
+.B -series3a
+for Psion Series 3a / Series 3c / Series 3mx / Sienna . See
+.I /usr/share/doc/p3nfs/Epoc16
+for a more detailed HOWTO. As client you can either use
+.B nfsc3a.opl
+or
+.B nfsc.app
+which comes with a builtin VT100 emulator.
+Note: You cannot use the Infrared interface of the Series3c as it is not IrDA
+compliant.
+.TP
+.B -series5
+for Psion Series 5 / Series 5mx / Ericsson MC218 . As client you can use
+.B nfsc5.opl
+or
+.B nfsapp,
+the latter one comes as an application with its own SIS
+file (nfsapp-2.5-epocR5.sis).
+.B nfsapp
+supports cable and IrDA for this architecture.
+For a HOWTO see
+.I /usr/share/doc/p3nfs/Epoc32_R5
+.TP
+.B -series60
+for Series 60 Phones like the Nokia 3650, 7650 and Siemens SX1.
+The client is 
+.B nfsapp
+(nfsapp-2.5-series60.sis), and it supports IrDA
+and Bluetooth in the Series60 version. The HOWTO is
+.I /usr/share/doc/p3nfs/Epoc32_R6
+and
+.I /usr/share/doc/p3nfs/bluetooth.linux
+respectively.
+.TP
+.B -crystal
+for the Nokia 92x0 Communicator. 
+The client is 
+.B nfsapp
+(nfsapp-2.5-crystal.sis), and it supports serial cable or IrDA.
+The detailed HOWTO is
+.I /usr/share/doc/p3nfs/Epoc32_R6
+.TP
+.B -UIQ
+for UIQ Phones like the Sony-Ericsson P800.
+The client is
+.B nfsapp
+(nfsapp-2.5-UIQ.sis), and it supports IrDA, Bluetooth
+and the connection over the USB docking station. The HOWTOs are
+.I /usr/share/doc/p3nfs/Epoc32_R6,
+.I /usr/share/doc/p3nfs/bluetooth.linux
+and
+.I /usr/share/doc/p3nfs/usb.linux
+.SH OPTIONS
+.TP
+.B -conn <prog>
+Start
+.B <prog>
+after the connection is established. E.g. to do automatic backups.
+.TP
+.B -dir <directory>
+Use
+.B <directory>
+as mount point instead of the default /mnt/psion. The directory has to be empty.
+.TP
+.B -disconn <prog>
+Start
+.B <prog>
+after the connection is finished.
+.TP
+.B -epoc32_filesystem
+Needed for a connection with a Epoc32 based device. You should not specify
+this option explicitely.
+.TP
+.B -nobackground
+Do not go to background after mounting, used mostly for debugging.
+.TP
+.B -noflow
+Do not use hardware flowcontrol. Needed e.g. for the Nokia Communicator.
+.TP
+.B -oldnfsc
+Use the "old" protocol. Certain clients need this.
+.TP
+.B -shell prog
+When using the Epoc16 client 
+.B nfsc
+you can have a UNIX shell on the PDA.
+This option selects the shell program.
+.TP
+.B -speed <baud>
+The baudrate used for communication.
+.TP
+.B -tcp
+This options selects TCP as communication interface.
+.TP
+.B -timeout <msec>
+The timeout for the communication with the client. Some clients/protocols
+need bigger timeouts. Use this option with care.
+.TP
+.B -tty <dev>
+The serial device used for communication (not valid for TCP).
+Linux examples: 
+.I /dev/ttyS0
+for Serial cable,
+.I /dev/ircomm0
+for IrDA,
+.I /dev/rfcomm0
+for bluetooth.
+.TP
+.B -user <uid>
+The files of the PDA/Phone should be accessible by <uid> only. Default is the
+uid of the caller. This option is only available when p3nfsd is started by
+the root user.
+.TP
+.B -v
+Be more verbose. You can increase the debug level after p3nfsd is started by
+sending a SIGUSR1 signal to p3nfsd or accessing <mountpoint>/debug.
+The output is written to stdout.
+You can increase debugging from 0 to 3 and then back to 0 again.
+.TP
+.B -wakeup
+Psion Series3* devices only. Specifying this option can wake up the device, if
+the cable switch is set accordingly.
+.SH Terminating p3nfsd
+Make sure that no process has open files / current working directory on
+the PDA filesystem. Then access the file <mountpoint>/exit, with e.g.
+"ls /mnt/psion/exit" or ":> /mnt/psion/exit". You should receive the error
+message: File exists. After 2 seconds p3nfsd will try to unmount the directory
+and exit.
+.SH SEE ALSO
+irobex_palm3
+.SH BUGS
+p3nfs may hang your shell, if it cannot connect to the client.
+The following procedure might help you to recover without booting
+the host system:
+
+First kill the program which tries to access the PDA filesystem. In some cases
+you have to wait some minutes until the process dies, even if killed with -KILL.
+Then either try to terminate p3nfsd normally (see above), or kill p3nfsd
+.B and
+unmount the <mountpoint> manually.
+.SH AUTHOR
+Rudolf Koenig, (C) 1993-2003, Email: r_dot_koenig_at_koeniglich_dot_de

@@ -1,0 +1,19 @@
+#
+#	Psion nfsc (from the p3nfsc Package) termcap entry
+#
+nfsc|nfsc-am|Psion S3/S3a nfsc v4.0,
+	am, mir, msgr, xenl, xon,
+	cols#80, it#8, lines#20,
+	bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z,
+	clear=\E[H\E[J, cr=\r, csr=\E[%i%p1%d;%p2%dr,
+	cub=\E[%p1%dD, cub1=\b, cud=\E[%p1%dB, cud1=\n,
+	cuf=\E[%p1%dC, cuf1=\E[C, cup=\E[%i%p1%d;%p2%dH,
+	cuu=\E[%p1%dA, cuu1=\E[A, dch=\E[%p1%dP, dch1=\E[P,
+	dl=\E[%p1%dM, dl1=\E[M, ed=\E[J, el=\E[K, el1=\E[1K,
+	home=\E[H, ht=\t, hts=\EH, ich=\E[%p1%d@,
+	il=\E[%p1%dL, il1=\E[L, ind=\n, kbs=\b, kcub1=\EOD,
+	kcud1=\EOB, kcuf1=\EOC, kcuu1=\EOA, nel=\EE, rc=\E8,
+	rev=\E[7m, ri=\EM, rmir=\E[4l, rmkx=\E[?1l, rmso=\E[m,
+	rmul=\E[24m, rs2=\Ec, sc=\E7, sgr0=\Em, smir=\E[4h,
+	smkx=\E[?1h, smso=\E[7m, smul=\E[4m, tbc=\E[3g,
+

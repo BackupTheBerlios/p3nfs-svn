@@ -1,0 +1,46 @@
+EPOC=/local/symbian_sdk_series80_20
+GCCPATH=/local/gcc-3.0-psion-98r2
+PATH=$(GCCPATH)/bin:/local/bin:/usr/bin:/bin
+
+OBJECTS=nfsapp.o
+
+include $(GCCPATH)/lib/makerules/eikon
+include $(GCCPATH)/lib/makerules/defines.series80.v2
+include version
+
+LLIBS=euser apparc cone eikcore
+LIBS=$(LLIBS:%=$(EPOCTRGREL)/%.lib)
+
+
+NAME=nfsapp
+TARGET=$(NAME).app
+PKGFILES=$(NAME).app $(NAME).aif $(NAME).rsc nfsclient.exe nfsclient.ini
+U3 = 101F7058
+
+CFLAGS += -O -I. -DUID3=0x$(U3)
+CPPFLAGS += -D_EPOC32_6
+
+# This is nfsclient.exe specific
+EXELIBS=eikcore estlib esock insock bluetooth btmanclient
+EXEFLAGS=-D_IRDA -D_BLUETOOTH -D_TCP
+
+
+all:$(PKGFILES) $(NAME).sis
+	mv $(NAME).sis $(NAME)-$(VERSION)-$(SARCH).sis
+
+nfsclient.exe:
+	make -sf makefile.nfsclient EPOC="$(EPOC)"\
+		GCCPATH="$(GCCPATH)"\
+		EXEFLAGS="$(EXEFLAGS)"\
+		EXELIBS="$(EXELIBS)"
+
+$(TARGET):$(OBJECTS)
+
+$(NAME).aifspec:
+	@echo "mbmfile=icon.$(ARCH).mbm" > $(NAME).aifspec
+	@echo "ELangEnglish=$(NAME)" >> $(NAME).aifspec
+
+$(NAME).o: $(NAME).rsc $(NAME).h
+
+clean:
+	rm -f $(GENERATED) $(NAME).aifspec

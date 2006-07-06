@@ -1,0 +1,337 @@
+REM nfsc5.opl, (C) 1994,1997 Rudolf K”nig
+
+REM Series 5 port Richard Panton (rpanton@lhr-sys.dhl.com)
+
+include "system.oxh"
+include "date.oxh"
+include "const.oph"
+
+declare external
+
+REM Select baud rate with one of the following constants
+const KBaud9600%		= 15
+const KBaud19200%		= 16
+const KBaud38400%		= 17
+const KBaud57600%		= 18
+const KBaud115200%		= 19
+
+external rsset:(bd%, par%, db%, st%, hand%, term&)
+external isdir%:(name$)
+external dostat:(stat&, name$, hdl%)
+external count_links%:(name$)
+
+proc transmit:
+	global epoch&, timestamp&
+	local hdr$(255), buf$(255), stat$(16)
+	local ha&, size&, off&
+	local i%, ret%, cmd%, len%, hdl%
+	local mediatype%(8), deviceprop%(8),si%(10)
+
+	defaultwin 0
+	print " Welcome to nfsc5, version 5.3"
+	screeninfo si%()
+	gAT si%(1),si%(2) :gINVERT 31*si%(7),si%(8)
+	screen si%(3),si%(4)-1,1,2 :at 1,1
+
+	REM Create a couple of date objects
+	epoch& = DTNewDateTime&:(1970, 1, 1, 0, 0, 0, 0) : timestamp& = DTNow&:
+
+	REM Media type translation table
+	mediatype%(KMediaUnknown&)	= 0 : mediatype%(KMediaFloppy&)	= 1
+	mediatype%(KMediaHardDisk&)	= 2 : mediatype%(KMediaCDROM&)	= 5
+	mediatype%(KMediaRAM&)		= 4 : mediatype%(KMediaFlash&)	= 3
+	mediatype%(KMediaROM&)		= 5 : mediatype%(KMediaRemote&)	= 0
+
+	REM device properties translation table
+	deviceprop%(KMediaUnknown&)	= $00 : deviceprop%(KMediaFloppy&)	= $A8
+	deviceprop%(KMediaHardDisk&)	= $A8 : deviceprop%(KMediaCDROM&)		= $20
+	deviceprop%(KMediaRAM&)		= $E8 : deviceprop%(KMediaFlash&)		= $28
+	deviceprop%(KMediaROM&)		= $20 : deviceprop%(KMediaRemote&)	= $00
+	
+	REM Allow priority to be raised in foreground
+	SetComputeMode:(KComputeModeOff&)
+
+	lopen "TTY:A"
+	rsset:(KBaud115200%, 0, 8, 1, 0, &0)
+
+	ha& = addr(hdr$)
+	
+	while 1
+		len% = 0 : cmd% = 1
+		ResetAutoSwitchOffTimer:
+		iow(-1, 1, #addr(len%), cmd%)		: REM get command length
+		ret% = iow(-1, 1, #ha&, len%)		: REM get command data
+		if ret% : raise ret% : stop : endif
+
+		trap raise 0
+		vector peekb(ha&+len%-1)
+			creat, gattr, mkd,  read
+			rdir,  remv,  renm, rmd
+			sattr, write, getd, statd
+		endv
+		lprint chr$(1); : print "X";
+		continue
+
+sattr::
+		i%=peekw(ha&+len%-3)
+		if not exist(hdr$)
+			lprint chr$(KErrNotExists%); : print "S";
+		else
+			setreadonly:(hdr$, -((i% AND 1)=0))
+			sethiddenfile:(hdr$, -((i% AND 2)=2))
+			setsystemfile:(hdr$, -((i% AND 4)=4))
+			lprint chr$(0); : print "s";
+		endif
+		continue
+
+renm::
+		len% = peekb(ha&+len%-2)
+		print "_"+chr$(8);
+		iow(-1, 1, #addr(buf$), len%)
+		trap rename hdr$, buf$
+		lprint chr$(err);
+		if err : print "N"; : else : print "n"; : endif
+		continue
+
+remv::
+		trap delete hdr$
+		lprint chr$(err);
+		if err : print "D"; : else : print "d"; : endif
+		continue
+
+rmd::
+		trap rmdir hdr$
+		lprint chr$(err);
+		if err : print "Z"; : else : print "z"; : endif
+		continue
+
+mkd::
+		trap mkdir hdr$
+		lprint chr$(err);
+		if err : print "M"; : else : print "m"; : endif
+		continue
+
+creat::
+		ret% = ioopen(hdl%, hdr$, 2)
+		lprint chr$(ret%);
+		if ret%
+			print "C";
+		else
+			print "c";
+			ioclose(hdl%)
+		endif
+		continue
+
+write::
+		off& = peekl(ha&+len%-7)
+		len% = peekw(ha&+len%-3)
+
+		print "_"+chr$(8);
+		ret% = ioopen(hdl%, hdr$, $300)	: REM update & random access
+		if ret% = 0 and off& > 0
+			ret% = ioseek(hdl%, 1, off&)
+		endif
+
+		while len%
+			i% = len%
+			if i% > 250 : i% = 250 : endif
+			iow(-1, 1, #addr(buf$), i%)	: REM Read data to be written
+			if ret% = 0
+				ret% = iowrite(hdl%, addr(buf$), i%)
+			endif
+			len% = len% - i%
+		endwh
+
+		lprint chr$(ret%);
+		if ret% : print "W"; : else : print "w"; : endif
+		ioclose(hdl%)
+		continue
+
+read::
+		off& = peekl(ha&+len%-7)
+		len% = peekw(ha&+len%-3)
+
+		ret% = ioopen(hdl%, hdr$, $600)	: REM shared & random access
+		if ret%
+			lprint chr$(ret%); : print "R";
+			continue
+		endif
+		print "_"+chr$(8);
+
+		dostat:(addr(stat$), hdr$, hdl%)
+		size& = peekl(addr(stat$)+5)
+		if off& > size&
+			off& = size&
+		endif
+		ioseek(hdl%, 1, off&)
+
+		if off& + len% > size& : len% = size& - off& : endif
+		if len% < 0 : len% = 0 : endif
+
+		lprint chr$(0);stat$;
+
+		while len% > 0
+			i% = len% : if i% > 250 : i% = 250 : endif
+			ioread(hdl%, addr(buf$)+1, i%)
+			len% = len% - i%
+			pokeb addr(buf$), i%
+			lprint buf$;
+		endwh
+		ioclose(hdl%)
+		print "r";
+		continue
+
+
+statd::
+		REM Returns number of links only in stat buff
+		print "_"+chr$(8);
+		ret% = count_links%:(hdr$)
+		if ret% < 0
+			lprint chr$(ret%); : print "F";
+		else
+			lprint chr$(0);chr$(ret%);chr$(ret%/256);"          "; : print "f";
+		endif
+		continue
+
+gattr::
+		print "_"+chr$(8);
+		ret% = dostat:(addr(stat$), hdr$, 0)
+		if ret%
+			lprint chr$(ret%);
+			print "G";
+		else
+			lprint chr$(0);stat$;
+			print "g";
+		endif
+		continue
+
+rdir::
+		lprint chr$(0);
+		print "_"+chr$(8);
+		buf$=dir$(hdr$) : lprint buf$;chr$(0);
+		while buf$ <> ""
+			buf$=dir$("") : lprint buf$;chr$(0);
+		endwh
+		print "l";
+		continue
+
+getd::
+		off& = 1 : lprint chr$(0);
+		print "_"+chr$(8);
+		buf$=rept$(chr$(0), 14)
+		pokew addr(buf$)+1, 3	: REM buffer version
+		while off& < 26				: REM Drives: 0=A - 25=Z
+			i%=(mediatype&:(off&) AND &7FFF)
+			if i% > KMediaNotPresent& and i% <= KMediaRemote&
+				pokeb addr(buf$)+3, mediatype%(i%)
+				pokeb addr(buf$)+4, deviceprop%(i%)
+				pokew addr(buf$)+5, (off&<>2 AND off&<>25)
+				pokel addr(buf$)+7, volumesize&:(off&)
+				pokel addr(buf$)+11, volumespacefree&:(off&)
+				lprint chr$(off&+%A);":";chr$(0);buf$;
+			endif
+			off& = off& + 1
+		endwh
+		lprint chr$(0); : print ">";
+		continue
+
+	endwh
+endp
+
+proc rsset:(bd%, par%, db%, st%, hand%, term&)
+	local fr%, sr%(6), dm%, err%
+	
+	fr% = db%-5
+	if st% = 2 : fr% = fr% or 16 : endif
+	if par% : fr% = fr% or 32 : endif
+	sr%(1) = bd% or (bd%*256)
+	sr%(2) = fr% or (par% * 256)
+	sr%(3) = (hand% and 255) or $1100
+	sr%(4) = $13
+	pokel addr(sr%(5)), term&
+	err%=iow(-1, 7, sr%(1), dm%)
+	if err% : raise err% : endif
+ENDP
+
+proc isdir%:(name$)
+	onerr notadir
+	DIR$(name$+"\")
+	onerr off
+	return KTrue%
+	notadir::
+	onerr off
+	return KFalse%
+endp
+
+proc dostat:(st&, name$, hdl%)
+	external epoch&, TimeStamp&
+	local l&, h%, ret%, lname$(255), fm%, lc%, isdir%, tm&, ts&
+	local nchk%, Check&(1024)
+	pokeb st&, 12	: Rem 12 byte info, just as the EPOC16 $887 call
+	
+	if hdl%
+		ioseek(hdl%, 2, l&)
+	elseif not exist(name$)
+		return KErrNotExists%
+	else
+		ret% = ioopen(h%, name$, $600)	: REM shared & random access
+		if ret%=KErrAccess% OR ret%=KErrNotExists%
+			fm%=$10 : isdir%=ktrue% : l&=0
+		elseif ret%=0
+			ioseek(h%, 2, l&)
+			ioclose(h%)
+			fm%=$100
+			isdir%=kfalse%
+		elseif ret%=KErrInUse% or ret%=KErrAlreadyOpen%
+			fm%=$100 : isdir%=kfalse% : l&=0
+		else
+			return ret%
+		endif
+	endif
+
+	if isdir%
+		nchk% = 0 : lc% = 0
+		lname$=dir$(name$+"\")
+		while lname$ <> ""
+			nchk%=nchk%+1
+			check&(nchk%)=alloc(len(lname$)+1)
+			poke$ check&(nchk%), lname$
+			lname$=dir$("")
+		endwh
+		while nchk%>0
+			if isdir%:(peek$(check&(nchk%))) : lc% = lc% + 1 : endif
+			freealloc check&(nchk%)
+			nchk%=nchk%-1
+		endwh
+	else
+		lc%=1
+	endif
+	if isreadonly&:(name$) = 0 : fm% = fm% OR 1 : endif
+	if ishidden&:(name$)   = 0 : fm% = fm% OR 2 : endif
+	if issystem&:(name$)   = 0 : fm% = fm% OR 4 : endif
+	getfiletime:(name$, TimeStamp&)
+	ts& = DTSecsDiff&:(epoch&, TimeStamp&)
+	pokew st&+1, lc%
+	pokew st&+3, fm%
+	pokel st&+5, l&
+	pokel st&+9, ts&
+	return 0
+endp
+
+proc count_links%:(name$)
+	local nchk%, lname$(255),check&(1024), lc%
+	nchk%=0
+	lname$=dir$(name$+"\")
+	while lname$ <> ""
+		nchk%=nchk%+1
+		check&(nchk%)=alloc(len(lname$)+1)
+		poke$ check&(nchk%), lname$
+		lname$=dir$("")
+	endwh
+	while nchk%>0
+		if isdir%:(peek$(check&(nchk%))) : lc% = lc% + 1 : endif
+		freealloc check&(nchk%)
+		nchk%=nchk%-1
+	endwh
+	return lc%
+endp

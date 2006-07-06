@@ -1,0 +1,41 @@
+all:@HAVE_EPOCR5@ @HAVE_SERIES60_V1@ @HAVE_SERIES60_V2@ @HAVE_SERIES80_V1@ @HAVE_SERIES80_V2@ @HAVE_UIQ_V2@
+	$(MAKE) -sf Makefile.UIQ.v2 clean
+
+
+distclean clean:
+	@$(MAKE) -sf Makefile.epocR5 clean
+
+BIN=../../../bin
+
+epocR5:
+	@$(MAKE) -sf Makefile.epocR5 clean
+	@$(MAKE) -sf Makefile.epocR5
+	@mv *.sis $(BIN)
+
+series80.v1:
+	@$(MAKE) -sf Makefile.series80.v1 clean
+	@$(MAKE) -sf Makefile.series80.v1
+	@mv *.sis $(BIN)
+
+series80.v2:
+	@$(MAKE) -sf Makefile.series80.v2 clean
+	@$(MAKE) -sf Makefile.series80.v2
+	@mv *.sis $(BIN)
+
+series60.v1:
+	@$(MAKE) -sf Makefile.series60.v1 clean
+	@$(MAKE) -sf Makefile.series60.v1
+	@mv *.sis $(BIN)
+	@$(MAKE) -sf Makefile.series60.v1.noirda clean
+	@$(MAKE) -sf Makefile.series60.v1.noirda
+	@mv *.sis $(BIN)
+
+series60.v2:
+	@$(MAKE) -sf Makefile.series60.v2 clean
+	@$(MAKE) -sf Makefile.series60.v2
+	@mv *.sis $(BIN)
+
+UIQ.v2:
+	@$(MAKE) -sf Makefile.UIQ.v2 clean
+	@$(MAKE) -sf Makefile.UIQ.v2
+	@mv *.sis $(BIN)

@@ -1,0 +1,122 @@
+This is a description of installing/using p3nfs with SymbianOS (Epoc32) devices
+
+
+
+Overview
+========
+- You'll need a program called p3nfsd on your UNIX computer, which has to be
+  run with root privileges, either via s-bit or started by root
+
+- Install the correct .SIS file on the client, for the .tar.gz distribution
+  they are in the bin directory, the rpm installs them into the
+  /usr/share/doc/p3nfs-version directory.
+
+  Note, the following categories respond to the .sis file you need to install on
+  the corresponding hardware.
+  - epocR5
+    Psion: Series 5, 5MX, 5MXpro, Revo, RevoPlus, Series 7, netBook, netpad,
+    Diamond Mako, (Osaris ???), Ericsson MC218
+  - series60.pre8.noirda
+    Nokia: N-Gage, N-Gage-QD
+  - series60.pre8 (Symbian OS < 8.0)
+    Nokia: 7650, 3650, 6600
+  - series60.post8 (Symbian OS >= 8.0)
+    Nokia: 6630, 6680
+  - series80.pre8
+    Nokia Communicator 9210, 9290, 9210i
+  - series80.post8
+    Nokia Communicator 9300, 9500
+  - UIQ
+    Sony Ericsson P800, P900, P910, Motorola A1000
+
+
+Compiling/Installation
+=====================
+1. p3nfsd:
+- % ./configure
+  % make
+- Install it with
+  # make install
+
+2. nfsapp.app / nfsclient.exe
+  Note: 1. a prebuilt binary is available in the bin directory, see above
+        2. the makefile uses the library rules for the Unix SDK, which you can
+           get from http://www.koeniglich.de/symbian_sdk_on_unix.html
+	3. If the SDK's are installed to their "standard" locations (check the
+	   configure script), then the toplevel makefile will build the
+	   nfsapp SIS files too.
+
+  % cd epoc32/nfsapp
+  Check the EPOC and GCCPATH variables in the Makefile.XXX
+  (see the Overview above for the correct XXX)
+  and then
+  % make -f Makefile.XXX  
+
+Usage:
+======
+
+A). Via cable, serial connection (_ONLY_: Nokia92X0 / Psion )
+  0. Connect both devices via the cable.
+  1. Start nfsapp on the client
+  2. Start p3nfsd on the server with following options
+     % p3nfsd -series80
+     (you may customize it, try p3nfsd -series80 -h)
+     Now you'll see your psion Drives in the /mnt/psion directory.
+  3. To terminate p3nfsd type (after you left the psion directories with
+     all your programs)
+     % ls /mnt/psion/exit
+
+B). Via Infrared
+  Notes:
+  - this method is slower and less fault tolerant than the cable one. 
+  - the order of starting the server and the client may be important
+  - it is sometimes necessary to restart the whole process to get contact.
+   
+  0. Place both devices in infrared contact.
+  1. Start infrared on the PC side (e.g. /etc/rc.d/init.d/irda start)
+  2. Start nfsclient, and switch the port to IrCOMM
+  3. Start p3nfsd with
+
+     % p3nfsd -<yourdevicetype> -dev /dev/ircomm0
+
+     # Note: for some devicetype /dev/ircomm0 is the default, check it with
+     % p3nfsd -<yourdevicetype> -h
+
+  4. If it won't work, stop p3nfsd with "ls /mnt/psion/exit", stop irda,
+     stop nfsclient and restart with 1.
+
+C). Via Bluetooth 
+
+  Notes:
+  - the order of starting the server and the client is important
+  - it is sometimes necessary to restart the whole process to get contact.
+  - this method is faster then infrared
+
+  0. Install  bluez-libs & bluez-utils & start the daemons
+  1. Enable bluetooth on the phone
+  2. Start nfsapp on the client and switch to bluetooth mode
+     - Note: If you receive "failed (-18)" then try to change the 13 on the
+       "Bluetooth=13" line in the file *:\System\Apps\nfsapp\nfsclient.ini
+       to another number (e.g. 3), and change the port to the same in the
+       rfcomm call below.
+  3. Connect the bluetooth address of the phone to a serial device
+     rfcomm bind /dev/rfcomm0 <BDADDR> 13
+  4. Start p3nfsd with 
+     p3nfsd -<yourdevicetype> -tty /dev/rfcomm0
+  
+  For a more detailed documentation see bluetooth.linux or bluetooth.macos.
+
+D). Via TCP/IP (WLAN devices, P800 over USB, all phones over the air)
+
+  Notes:
+  - The client connects by default to the IP adress 169.254.1.68, port 13579
+    (special P800 configuration). Edit the file nfsclient.ini on the phone if
+    you want to change this settings (most probably needed if not connecting to
+    the P800 via usb). The port on the server side is hardcoded in the file
+    tcp.c
+  - For a more detailed documentation see bluetooth.linux or bluetooth.macos.
+
+  0. Connect the P800 via USB (see the descriprion in usb.linux)
+  1. Start p3nfsd with 
+     p3nfsd -<yourdevicetype> -tcp
+  2. Start nfsapp on the client and switch to TCP/IP mode

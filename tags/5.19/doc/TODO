@@ -1,0 +1,1 @@
+- a copy aborts when a statfs call is done in between

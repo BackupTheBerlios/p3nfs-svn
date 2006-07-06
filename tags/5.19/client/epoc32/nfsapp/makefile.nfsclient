@@ -1,0 +1,20 @@
+include $(GCCPATH)/lib/makerules/cpp
+
+CORELIBS  = euser efsrv ws32 c32
+CORELIBS += $(EXELIBS)
+LIBS=$(CORELIBS:%=$(EPOCTRGREL)/%.lib)
+
+OBJECTS=nfsclient.o rfcomm.o tcpip.o util.o
+TARGET=nfsclient.exe
+
+CFLAGS += -Wall -O $(EXEFLAGS)
+
+U1 = 1000007a
+U2 = 00000000
+U3 = 00000000
+
+$(TARGET):$(OBJECTS)
+
+clean:
+	rm -f $(GENERATED)
+

@@ -1,0 +1,267 @@
+pl1 Fri Feb 4 1994
+  - Setting VTIME to 10 (1 second) to avoid lockups by read
+  - Automatic wakeup (by Toerless Eckert).
+pl2 Wed Feb 9 1994
+  - protocol between psion&sun changed slightly -> nfsc.opl has to
+    be updated.
+  - Select before read (hopefully less lockups now)
+  - Starting without psion attached (for starting p3nfsd at boottime)
+pl3 Sun Feb 13 1994
+  - select now works (without stuff/error correction)
+  - all 32 bytes of an nfs_fh are important...not only the first 4 (pwd works)
+  - rename bug fixed.
+  - extensively tested
+pl4 Sat Mar 19 1994
+  - p3nfsd should work now on hpux (biod's has to be stopped).
+  - large files can be written / udp buffer space enlarged.
+pl5 (????)
+  - Thank Juergen it should work on Linux
+pl6 (Around July 15.)
+  - AIX port. Strange lockups when writing a file twice. (?!)
+pl7 (17.8.94) (from version.h)
+  - AIX port (untested) by Rudi.
+  - Lee McLoughlin updated the linux port.
+pl8 (13.10.94)
+  - possibly help for classic S3 users. added untested nfsc_S3.opl
+  - Added preliminary Solaris 2.3 support. gec
+  - Made it gcc -Wall free.
+    (30.08.94)
+  - uadd for S3 classic added by Volker Lausch.
+pl9 (27.11.94)
+  - TIOCEXCL, retry on timeout.
+pl10 (28.02.95)
+  - Dan Danz has missing files. Addentry() seems broken.
+  - Rudi fixes his XDR encapsualtion in addentry().
+pl11 (09.05.95)
+  - /etc/mtab mode now preserved.
+pl12 (24.09.95)
+  - N.N. implements nfsc in C.
+  - Rudi sets E_MAX_PRIORITY and nfs_args.retrans=2
+pl13 (15.10.95)
+  - menu driven version of nfsc.c
+Version 4 (1.96)
+  - nfsc.c from N.N. modified:
+    - added crc for read / write
+    - changed protocol: new one = PREFIX byte (0x80) + old protocol
+      change was made to allow for simultanous terminal emulator + nfsd
+    - terminal emulator (vt100/vt220 subset)
+      Supports the standard psion fonts, if used with nfsd, resize
+      generates a window change event for the unix process.
+      Minimal support for alternate charset (font not complete).
+  - new nfsd options:
+    -oldnfsc for the old protocol (no prefix & crc, used with the opl)
+    -shell (fork "login" shell, new nfsc version only)
+  - mount option retries set to 10, it should ensure less nfs timeouts.
+  - default user is taken from LOGNAME.
+  - Solaris compiles now without warnings
+  - IBM CodePage850 to ISO8859-1 conversion for filenames & terminal emulator
+  - Jumpscroll for the emulator
+pl2 (4.96)
+  - IRIX port
+  - security patches -> should be safe to install suid now
+  - cache rewrite (& solaris mount option fix)
+  - linux tcdrain enabled
+  - xymodem
+  - minor nfsc tuning
+pl3 (16.5.96)
+  - Linux 1.3.97 sends 8kbyte nfs frames (1.2.13 : 1kbyte). The Linux
+    serial buffer is 4k, i.e p3nfsd can't write a whole frame in a single
+    write. Select doesn't work under Linux for checking if write is possible.
+    Fix: we are now flushing the serial line after each "bad" write. Enabled
+    with the define NO_WRITE_SELECT in config.h
+    (Bugreport by Keith Parks)
+  - ISO8859-1 Filename conversion fix i.e tolower(a-umlaut)
+  - Function key support for nfsc (defineable keys with load/save support)
+  - There is a "No VT100 Emulator" version of the nfsc client (nfscnovt.app)
+    in the distribution.
+      VT100 Emulation code + XYMODE support: 10k
+      NFSC support: 2k
+      serial line support + global routines: 7k
+pl3a (19.5.96, after a mail from Odd Gripenstam, nfsc changes only)
+  - Vt100 bugfix: ESC[;0r resets the scroll region now.
+  - Emulator logging implemented
+  - etc\fnkeys.nfs by Odd Gripenstam
+pl3b (27.5.96)
+  - "disable logging" bug fixed
+pl3c (17.6.96)
+  - Directory structure changed a bit, as nfsc is distributed now as a 
+    package on his own.
+pl3d (22.6.96)
+  - nfsd Makefile tuned to follow restructuring (cnv.h)
+  - nfsc: (Ideas by Ed Arnowitz)
+    Hangup implemented (untested)
+    FnKey editing allowed
+    Xmodem filename mustn't exist
+    24 rows support
+    Menus compacted
+pl4 (1.9.96)
+  - The old (and already fixed in version pl2?) mount option bug for solaris
+    is fixed again. Thanks to David Jackson <david@cogency.co.uk> for his
+    bug report.
+
+VERSION 5.0 (14.11.96)
+  - Changes in nfsc:
+    - Support for scrollback (over 500 lines are possible).
+    - Bring server functionality.
+    - Paste from the scrollback or from builtin applications.
+    - Dialing/scripting support. Extensible, as it is done in OPL.
+    - More than one configuration. Configuration is stored in file
+      and no more in the environment.
+    - Online help
+    - Baudrates 38400 & 57600 for 3c owners
+  - Solaris 2.4 workaround for files bigger then 80k, see mp_mount for
+    details.
+  - Tested on Linux 1.2.13/SunOS 4.1.4/Solaris 2.4
+    SparcLinux won't work (TCGETS is not fully implemented here)
+5.1
+  - README fixes + enhancements
+  - p3nfsd:
+    - NetBSD support + shell frontend (from Mike Meyer)
+    - HPUX 10.20 tested by Olaf Flebbe
+    - Security patch: mountdir must be empty. (bugreport by Olaf Flebbe)
+  - Nfsc:
+    - about email address fix
+    - RPC (Remote Process Call) implemented (suggestion by Mike Meyer)
+    - Autodial added
+    - New files has extension "nfs"
+    - Experimental 3Fax support
+    - Local mode
+5.2 (20.5.97)
+ - README fixes
+ - nfsc:
+    - logfiles should work now (0 char added)
+    - TTY:I and 115200 baud added
+5.3 (7.11.97)
+ - S5 Patches (rpanton@lhr-sys.DHL.COM)
+ - little reorganizing
+ - minor nfsc fix (max 800 scrollback)
+5.4 (Sun Mar 29 12:09:25 SGT 1998 - Thu Apr  8 12:40:03 MEST 1999)
+ - Linux glibc fixes integrated.
+ - nfsc fixes (see CHANGES there)
+ - NextStep port from Marcel Waldvogel
+ - FreeBSD 3.1 port from Flemming Jacobsen (FreeBSD 2.2.7 should compile too)
+ - Annoying default baudrate difference between nfsc5 and
+   p3nfsd -series 5 fixed (now both set to 57600)
+ - Ian Phillipps hard reset case added to KNOWN PROBLEMS.
+ - Small nfsc.opl changes by Richard Johnson for IR mode
+5.4a (Sat Apr 10 08:39:21 MEST 1999)
+ - The P3nfs port is integrated better now (Walter Hafner)
+
+5.4b	
+ - Small compile fix for Linux 2.0.36 (charlie@antipope.org, 15.3.99)
+
+5.6
+- Bugfix when reading System/Mail/XXX file (endless loop, can occure
+  everywhere)
+- nfsclient (EPOC32 R5 and R6) C++ version of nfsclient
+- Software flowcontrol and no flowcontrol version of the nfsc protocol.
+  nokia works only with no flowcontrol.
+
+5.7 Sat Feb 23 10:06:20 CET 2002
+- Rename fixes from Alfred E. Heggestad for nfsclient
+- Read is working now for linux  (linux seems to drop some bytes when reading,
+  in this case the read will be repeated...)
+- read/write speedup for nfsclient (we are now at 9.0/9.0 kb read/write with
+  Linux 2.4.17, and 9.0/8.8 on Linux 2.2).
+- Linux 2.2.20 compile fixes
+
+5.7a Mon Feb 25 17:51:47 CET 2002
+- Fix for gcc < 3.0
+
+5.8 Wed May 22 16:11:10 CEST 2002
+- Irda suppot (not very stable)
+
+5.9 Thu Sep  5 15:32:54 CEST 2002
+- Bluetooth support
+- Some directory reorganization
+- configure/autoconf is working again
+
+5.9a Mon Sep  9 14:43:51 CEST 2002
+- Small documentation changes
+- Nicer keyboard handling on the 7650
+
+5.10 Mon Jan 27 15:59:37 CET 2003
+- bluetooth is out / the new bluez code does it the "right" way: no explicit
+  p3nfsd support needed
+- p3nfsd options are now more consistent, including a lot of shortcuts
+- nfsclient tries to close the file if it thinks the file end is reached
+  (i.e a block with size != 1024 is to be written)
+
+5.10a Wed Jan 29 17:36:22 CET 2003
+- configure prefix default is /usr
+
+5.11 Sun Feb  2 14:48:46 CET 2003
+- Client: P800 port
+
+5.12 Tue Mar  4 12:15:41 CET 2003
+- Speedup for Bluetooth (100%) and Irda (50%)
+  See epoc32/nfsapp/doc/TIMES for detailed measurements
+  Blocksize is 8k now.
+
+5.13
+- no longer linking to librfcomm
+- connection over tcp/ip for connection over mrouter/USB with the P800
+- small compile fixes for gentoo linux
+- .rpm support
+- manual page
+
+5.13a
+- doc typos fixed (thanks to Joakim Mared)
+
+5.14 Mon Sep  8 07:14:28 CEST 2003
+- Timeout increased on b oth the server and the client, as we switched from
+  1kb blocksize to 8kb
+- usb.linux documentation mentions the FTDI chip (thanks to Rob Andrews)
+
+5.15 Sun Dez 28 19:00:00 CET 2003
+- nfsclient:
+  - The local bluetooth address is displayed.
+    Fixed a bug -> the rfcomm channel is now 11, you have to change your
+    startup scripts!
+  - UTF-8 support for filenames
+    Start your xterm with -u8, and  for tcsh set dspmbyte=utf8
+    bash, konqueror and nautilus seem to like utf-8 (RedHat 9)
+  - Config file nfsclient.ini will be processed, read only,
+    to be able to change bluetooth address, TCP/IP address,
+    default IO port and debug level whithout recompiling.
+
+5.16 Sat Aug  7 12:34:18 MEST 2004
+- nfsclient versions for the ngage (no IrDA)
+- The P800/P900 crashed if bluethooth was off
+  -> no display of the bt address any more
+- A920 key support
+- ARCH package (without .SIS files)
+- rpm build is working again on Fedora Core 2
+
+5.17 Thu Apr 21 17:19:42 MEST 2005
+- nfsclient:
+  Async write disabled, as we got problems when writing to Flash:
+  A popup from the OS appears: "Cannot finish writing to the disk"
+  (loosely translated from german)
+  The write-speed does not seem to be much lower, but no real tests conducted
+  The EpocR5 version should work again...
+- a blutooth correlated bug which only appears on newer phones fixed
+
+5.17a Fri Apr 29 18:31:04 MEST 2005
+- configure and makefile should work again
+- UIQ .sis installs again
+
+5.18 Thu May  5 08:19:53 MEST 2005
+- Put a hint in p3nfs.html to the Google groups 
+  Thanks Tim for creating the group
+- Nfsclient/nfsapp are now using version.h from the nfsd.h directory
+  -> we have a common version
+
+5.19 Tue Oct 16 14:16:15 MEST 2005
+- Motorola/P800 keys are working again in nfsapp.
+  (Thanks for Marek K. for the hint)
+- Fixed compile errors for kernel >= 2.6.11
+- MacOS X (Panther) port by Pasquale Foggia
+  I hope it works, as I cannot verify it.
+- Series 60 OS 8.0 phones should work again.
+- Nfsclient client fix from Pasquale Foggia (checking the return codes
+  of open and stat when reading data)
+- The bluetooth server port on the client will be reopened, so there is
+  no need to manually restart it.
+- Berlios 
+- Directories restructured / documentation revisited

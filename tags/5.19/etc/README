@@ -1,0 +1,33 @@
+bluetooth.rc
+	My blutooth start/stop script for RedHat 7.3
+	Note: You have to install the BT Libs & Tools separately
+
+frontend
+	Graphical TCL frontend to mount / unmount your psion.
+	Edit p3.tcl to adapt the parameters to your setting.
+
+nfsc.termcap
+	A description of the nfsc (epoc16) terminal capabilities.
+	If your system is using termcap (there is an /etc/termcap file)
+	then append this file to your /etc/termcap, and set TERM to nfsc.
+
+nfsc.terminfo.src
+	This is the same as nfsc.termcap, but for terminfo based systems.
+	You have to compile it with tic.
+
+s5magic
+	Append this file to /etc/magic (if your systems supports it),
+	so if you're using the command file on your mounted s5, you get
+	some nice explanations of the file-types.
+	Courtesy of Richard Panton.
+
+mrouter-usb
+mrouter-bluetooth
+mrouter.chat
+	For mrouter cacpable devices (7650, P800):
+	Copy these files into your /etc/ppp/peers directory, enable the
+	PC connection on the device, and start
+	  /usr/sbin/pppd call mouter-usb
+	to establish a PPP connection to the device.
+	You can use the tcp option of p3nfs to establish the connection
+	to nfsclient

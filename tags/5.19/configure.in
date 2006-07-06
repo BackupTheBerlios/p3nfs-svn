@@ -1,0 +1,119 @@
+dnl
+dnl  $Id: configure.in,v 1.6 2002/08/10 04:42:26 maxk Exp $
+dnl
+dnl Process this file with autoconf to produce a configure script.
+dnl
+AC_INIT()
+
+AC_CONFIG_HEADER(server/config.h)
+
+AC_PREFIX_DEFAULT(/usr)
+
+
+AC_PROG_CC
+
+AC_SUBST(MNTDIR)
+AC_ARG_WITH(mntdir,
+        [  --with-mntdir=DIR	Default mount location (/mnt/psion)],
+        [ MNTDIR="$withval" ],
+        [ MNTDIR=/mnt/psion ],
+)
+
+
+dnl Extracting program version
+VERSION=`sed -n -e 's/^#define.*"\([0-9]*\)\.\([0-9]*\)"/\1.\2/p' < server/version.h`
+AC_SUBST(VERSION)
+PKGVERS=`sed -n -e 's/^#define.*"\([0-9]*\)\.\([0-9]*\)"/\1,\2/p' < server/version.h`
+AC_SUBST(PKGVERS)
+
+
+
+dnl Checking compiler
+CFLAGS="-O"
+test "$GCC" = yes && CFLAGS="-O2 -Wall"
+AC_PATH_PROG(CC_PATH, $CC)
+test "$CC_PATH" = /opt/SUNWspro/bin/cc && CFLAGS="-xO2 -v"
+
+
+dnl Checking for aix
+AC_MSG_CHECKING(for AIX)
+if test "`uname -s 2>/dev/null`" = AIX ; then
+  AC_MSG_RESULT(yes)
+  AC_CHECK_LIB(bsd, hostname)
+  EXTRA_OBJS=mount_aix.o
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST(EXTRA_OBJS)
+
+
+AC_CHECK_FUNCS(strerror)
+AC_MSG_CHECKING(for additional libraries)
+AC_CHECK_LIB(socket, socket)
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(rpcsoc, svcudp_create,,LDFLAGS=$ac_save_LDFLAGS)
+ac_save_LDFLAGS=$LDFLAGS;
+if test -d /usr/ucblib; then
+  LDFLAGS="-L/usr/ucblib -R/usr/ucblib $LDFLAGS"
+fi
+
+dnl checks for header files
+AC_CHECK_HEADERS(sys/ioctl.h sys/errno.h sys/ttold.h stdlib.h)
+
+dnl Looking for the mtab
+AC_MSG_CHECKING(for mount table)
+for i in /etc/mnttab /etc/mtab; do
+  if test -f $i ; then
+    MTAB=$i
+    AC_MSG_RESULT($i)
+    break
+  fi
+done
+test -z "$MTAB" && { echo "mtab not found... " 1>&2; CFLAGS="${CFLAGS} -DDONT_UPDATE_MTAB";}
+AC_SUBST(MTAB)
+
+
+AC_MSG_CHECKING(for default serial line)
+for i in /dev/tty0p0 /dev/tty00 /dev/ttyS0 /dev/ttys0 /dev/term/a /dev/ttyfa /dev/ttya /dev/tty0 /dev/ttyf1 /dev/cuaa1 ; do
+  if test -c $i ; then
+    DDEV=$i
+    AC_MSG_RESULT($i)
+    break
+  fi
+done
+test -z "$DDEV" && AC_MSG_ERROR(serial device not found... Try harder.)
+AC_SUBST(DDEV)
+
+dnl Looking for Symbian SDKs:
+
+AC_MSG_CHECKING(EPOCR5 SDK)
+if test -d /local/symbian_sdk_5.0 ; then HAVE_EPOCR5=epocR5; fi
+test -z "$HAVE_EPOCR5" && echo "missing" || echo "found"
+AC_SUBST(HAVE_EPOCR5)
+
+AC_MSG_CHECKING(Series60.V1 SDK)
+if test -d /local/symbian_sdk_series60_1.2 ; then HAVE_SERIES60_V1=series60.v1; fi
+test -z "$HAVE_SERIES60_V1" && echo "missing" || echo "found"
+AC_SUBST(HAVE_SERIES60_V1)
+
+AC_MSG_CHECKING(Series60.V2 SDK)
+if test -d /local/symbian_sdk_series60_fp2 ; then HAVE_SERIES60_V2=series60.v2; fi
+test -z "$HAVE_SERIES60_V2" && echo "missing" || echo "found"
+AC_SUBST(HAVE_SERIES60_V2)
+
+AC_MSG_CHECKING(Series80.V1 SDK)
+if test -d /local/symbian_sdk_6.0 ; then HAVE_SERIES80_V1=series80.v1; fi
+test -z "$HAVE_SERIES80_V1" && echo "missing" || echo "found"
+AC_SUBST(HAVE_SERIES80_V1)
+
+AC_MSG_CHECKING(Series80.V2 SDK)
+if test -d /local/symbian_sdk_series80_20 ; then HAVE_SERIES80_V2=series80.v2; fi
+test -z "$HAVE_SERIES80_V2" && echo "missing" || echo "found"
+AC_SUBST(HAVE_SERIES80_V2)
+
+AC_MSG_CHECKING(UIQ.V2 SDK)
+if test -d /local/symbian_sdk_UIQ_21 ; then HAVE_UIQ_V2=UIQ.v2; fi
+test -z "$HAVE_UIQ_V2" && echo "missing" || echo "found"
+AC_SUBST(HAVE_UIQ_V2)
+
+AC_OUTPUT(Makefile server/Makefile pkg/p3nfs.spec client/epoc32/nfsapp/Makefile client/epoc32/nfsapp/version doc/p3nfsd.1)
