@@ -12,9 +12,15 @@ BINDIR		= $(PREFIX)/bin
 DOCDIR		= $(PREFIX)/share/doc/p3nfs-$(VERSION)
 MANDIR		= $(PREFIX)/share/man/man1
 
-all clean distclean::
+all::
 	cd server; $(MAKE) $@
-	cd client/epoc32/nfsapp; $(MAKE) $@
+
+client::
+	cd client/epoc32/nfsapp; $(MAKE) all
+
+clean distclean::
+	cd server; $(MAKE) $@
+	cd client/epoc32/nfsapp; $(MAKE) @@
 
 install::
 	mkdir -p $(BINDIR)

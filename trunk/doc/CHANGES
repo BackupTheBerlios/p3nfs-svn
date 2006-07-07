@@ -265,3 +265,6 @@ VERSION 5.0 (14.11.96)
   no need to manually restart it.
 - Berlios 
 - Directories restructured / documentation revisited
+
+Changes since previous release
+- seperate build target for client
