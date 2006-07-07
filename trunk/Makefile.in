@@ -20,7 +20,7 @@ client::
 
 clean distclean::
 	cd server; $(MAKE) $@
-	cd client/epoc32/nfsapp; $(MAKE) @@
+	cd client/epoc32/nfsapp; $(MAKE) $@
 
 install::
 	mkdir -p $(BINDIR)
