@@ -32,3 +32,7 @@ the commit messages. Developers are expected to be subscribed
 to that ML. More info
 at http://lists.berlios.de/mailman/admin/p3nfs-svn
 
+
+Subversion ignores files like 'a.out' and '*.o'
+To ignore more files, put them in '.svnignore' and do
+ svn propset svn:ignore -F .svnignore .
