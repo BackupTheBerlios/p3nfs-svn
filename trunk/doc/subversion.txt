@@ -1,0 +1,34 @@
+Some notes on Subversion usage within p3nfs.
+
+The mainstream development line resides in 'trunk'
+
+
+After a release, tag trunk under 'tags'.
+Example given:
+
+Say that 5.43 is released and
+your Berlios account is hekker
+then do
+
+ svn copy \
+  svn+ssh:hekker@svn.berlios.de/svnroot/repos/p3nfs/trunk \
+  svn+ssh:hekker@svn.berlios.de/svnroot/repos/p3nfs/tags/5.43
+
+
+Non-mainstream development should be done in 'branches'
+Contact the other developers before you create a branch. 
+
+
+IMPORTANT:
+
+   Subversion is NOT a communication tool,
+   use it only for Source Code Mangament
+   and communicate with your fellow-developers
+   through other channels as 'svn'
+
+
+The mailinglist p3nfs-svn@lists.berlios.de does mail
+the commit messages. Developers are expected to be subscribed
+to that ML. More info
+at http://lists.berlios.de/mailman/admin/p3nfs-svn
+
