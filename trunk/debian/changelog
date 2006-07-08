@@ -1,0 +1,126 @@
+p3nfs (5.18-2) unstable; urgency=low
+
+  * New maintainer (Closes: #95747,312838)
+
+  * Added "Psion/Symbian" in the short description
+  
+  * debian/control: switch to dh_installman, removed dh_ comment lines
+
+ -- Geert Stappers <stappers@debian.org>  Thu, 21 Jul 2005 11:03:27 +0200
+
+p3nfs (5.18-1) unstable; urgency=low
+
+  * Orphaning this package: maintainer set to Debian QA Group. See
+    #95747 and #312838.
+  * New upstream release.
+  * Updated description in debian/control.
+  * Added copyright holders to debian/copyright.
+  * Fixed "p3nfs needs dependency to portmap", closes: #298278.
+  * Fixed "override disparities found in suite unstable, override says
+    otherosfs - extra, .deb says misc - optional".
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Mon, 13 Jun 2005 08:53:49 +1000
+
+p3nfs (5.15-2) unstable; urgency=low
+
+  * Looks like the serial port on s390 is /dev/ttyS, not /dev/ttyS0
+  * Save changelog in utf-8
+
+ -- Steve Haslam <araqnid@debian.org>  Wed, 31 Mar 2004 15:47:38 +0100
+
+p3nfs (5.15-1) unstable; urgency=low
+
+  * New upstream release (closes: #181691). I no longer have a Psion, so I
+    have no idea if that actually *works*. This package is RFA'd for a
+    reason.
+  * Update debian/copyright to include correct upstream location (Closes: #203204)
+  * Fix "Debian/GNU Linux" (urgh) (Closes: #126978)
+  * Copy updated description from upstream webpage (Closes: #125211)
+
+ -- Steve Haslam <araqnid@debian.org>  Fri, 12 Mar 2004 23:38:25 +0000
+
+p3nfs (5.4-7) unstable; urgency=low
+
+  * Rebuild due to bogus shared library versioning. (closes: #97848)
+
+ -- Steve Haslam <araqnid@debian.org>  Fri, 18 May 2001 19:53:49 +0100
+
+p3nfs (5.4-6) unstable; urgency=low
+
+  * Changing tactic: copy the nfs_mount.h from kernel 2.0.39 and use that
+    instead of trying to use linux/nfs_mount.h from glibc. Since p3nfs
+    predates NFS3 support in the kernel, trying to use a recent NFS header
+    seems hideously unreliable. The kernel ought to see that the "version"
+    field is low and compensate accordingly.
+    (bug #96805 is a symptom)
+  * Added Build-Depends on debhelper to control
+  * Updated Standards-Version
+  * Removed /psion/mnt directory
+
+ -- Steve Haslam <araqnid@debian.org>  Wed,  9 May 2001 17:33:03 +0100
+
+p3nfs (5.4-5) unstable; urgency=low
+
+  * Moved files from /usr/lib/p3nfs/nfsc to /usr/share/p3nfs/nfsc
+  * Copy the 'opl' directory to /usr/share/p3nfs/opl (Closes: #40902)
+  * Missed from previous version: (Closes: #91014, #91595)
+  * Might have fixed #84499, but need confirmation.
+
+ -- Steve Haslam <araqnid@debian.org>  Sun, 29 Apr 2001 16:32:37 +0100
+
+p3nfs (5.4-4) unstable; urgency=low
+
+  * Rebuilt to fix paths.
+  * Fiddle with include files to get it to build with latest glibc. Since I don't
+    currently have a working Psion, i can't test this. This package needs adoption.
+
+ -- Steve Haslam <araqnid@debian.org>  Sun, 29 Apr 2001 16:13:05 +0100
+
+p3nfs (5.4-3) unstable; urgency=low
+
+  * debian/rules now uses debhelper; this includes cleaning out
+    debian/files. Closes #36177, #36469.
+
+ -- Steve Haslam <araqnid@debian.org>  Mon, 10 May 1999 20:08:44 +0100
+
+p3nfs (5.4-2) unstable; urgency=low
+
+  * Updated maintainer name in debian/control
+
+ -- Steve Haslam <araqnid@debian.org>  Sun, 18 Apr 1999 14:44:33 +0100
+
+p3nfs (5.4-1) unstable; urgency=low
+
+  * New upstram version
+  * New maintainer
+
+ -- Steve Haslam <araqnid@debian.org>  Wed, 14 Apr 1999 20:50:15 +0100
+
+p3nfs (5.3-1) unstable; urgency=low
+
+  * New upstream version
+  * New maintainer
+  * added libc6-patches from Rudolf König,
+    and patched some places myself to make p3nfs compile under libc6.
+  * added a (rudimentary) manpage
+
+ -- David Frey <dfrey@debian.org>  Tue,  9 Jun 1998 00:28:51 +0200
+
+p3nfs (5.1-2) unstable; urgency=low
+
+  * The architecture field in source pacakge now has the value `any' 
+    instead of `i386'.
+  * Removed the DUSER define in the config.h file to aviod a security
+    hole, according to the upstream author.
+
+  * Fixed a silly typo in the postinst script.
+
+ -- Billy C.-M. Chow <cmchow@se.cuhk.edu.hk>  Wed, 11 Dec 1996 19:05:44 +0800
+
+p3nfs (5.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Billy C.-M. Chow <cmchow@se.cuhk.edu.hk>  Wed, 11 Dec 1996 13:36:50 +0800
+
+

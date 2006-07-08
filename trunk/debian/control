@@ -1,0 +1,31 @@
+Source: p3nfs
+Section: otherosfs
+Priority: extra
+Maintainer: Geert Stappers <stappers@debian.org>
+Standards-Version: 3.6.1
+Build-Depends: debhelper (>= 4.1.16)
+
+Package: p3nfs
+Architecture: any
+Depends: ${shlibs:Depends}, portmap
+Description: to mount the file systems on the Psion/Symbian PDA/Phone
+ P3nfsd is a Symbian (Psion/Nokia/Sony-Ericsson/etc) to UNIX/Linux
+ communication program. It allows you to mount the file systems of
+ the Phone/PDA on your UNIX machine. This means that you see all
+ the filesystems of the Phone/PDA as a filesystem on your UNIX
+ machine and you can copy/backup/edit any file on the Phone/PDA
+ with your preferred tools on the UNIX machine.
+ .
+ Supported devices are:
+  - UIQ phones over infrared, bluetooth or the USB cradle
+    (e.g. Sony Ericsson P800 or P900, Motorola A920, BenQ P30)
+  - Series 60 phones over infrared or bluetooth
+    (e.g. Nokia 6600,7650,3650,N-Gage; Siemens SX1; Samsung SGH-D700)
+  - Series 80 phones over cable or infrared
+    (Nokia Communicator: 9210/9210i/9210c/9290)
+  - Psion PDA's over cable or infrared
+    (e.g. Psion 5/5mx/netpad/netBook/Series 7/MC218/revo/mako)
+  - EPOC16 over cable
+    (Psion 3/3a/3c/3mx/Siena/Workabout)
+ .
+ Homepage http://www.koeniglich.de/p3nfs.html

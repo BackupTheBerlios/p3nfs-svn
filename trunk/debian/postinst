@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#DEBHELPER#
+
+set -e
+
+cat <<_END_
+
+Please refer to /usr/doc/p3nfs/README for the usage. Before using it,
+transfer /usr/doc/p3nfs/examples/nfsc.opl or /usr/lib/p3nfs/nfsc/nfsc.app
+to your psion.
+
+You have to run p3nfsd as root, since it wants to use NFS.
+Another alternative is to make it setuid root.
+
+Press ENTER to continue.
+_END_
+
+read answer
+
+exit 0

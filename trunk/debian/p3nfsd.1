@@ -1,0 +1,58 @@
+.TH P3NFSD 1 "April 20, 1998" "Debian" "User's Reference Manual" \" -*- nroff -*-
+.SH NAME
+p3nfsd \- NFS-like daemon for Psion 3-series handhelds
+.SH SYNOPSIS
+.B p3nfsd
+[-dir \fIdirectory\fP] 
+[-user \fIusername\fP] [-tty \fIser-dev\fP] [-speed \fIbaudrate\fP]
+[-conn \fIprog\fP] [-disconn \fIprog\fP] [-wakeup] [-v] [-shell \fIprog\fP] 
+[-oldnfsc] [-series5] [-]
+.SH "DESCRIPTION"
+.B p3nfsd
+lets you mount the Psion drives on your Unix workstation over a serial cable. 
+You can access all the files from the Psion with the usual commands like 
+.BR tar ", " cp ", " vi " and " co .
+.\".SH OPTIONS
+.\".TP
+.\".RI -dir directory
+.\".TP
+.\".RI -user username
+.\".TP
+.\"where to mount the Psion drive, owner of the files
+.\".TP
+.\".RI -tty  ser-dev
+.\".RI -speed baudrate
+.\"serial device to use and speed of the link
+.\".TP
+.\".RI -conn prog
+.\".RI -disconn prog
+.\"program to run at connection/disconnection
+.\".TP
+.\".RI -wakeup
+.\".RI -shell prog
+.\".SH ENVIRONMENT
+.SH FILES
+\fI/psion/mnt/*\fR	mounted files.
+.SH "SEE ALSO"
+.BR nfs "(5), " tar (1).
+.SH CAVEATS
+Please close all open files before doing a backup, as the files are
+opened exclusively by most programs (not nfsc.opl) and so they can't
+be read by anybody else.
+.PP
+.I p3nfsd
+runs as root since it uses the
+.BR mount (2)
+system call.
+.PP
+.SH RESTRICTIONS
+.B p3nfsd 
+is not really an NFS daemon. You can't mount the Psion from
+another workstation, only from the one, where it is attached to via
+the serial cable. I used NFS, beause it is a portable way to capture
+filesystem operations in a program. The daemon talks to the OPL or C
+program on the Psion through a simple protocol.
+.SH AUTHOR
+Rudolf K\(:onig (rfkoenig@immd4.informatik.uni-erlangen.de).
+.br
+Linux port by J\(:urgen Weigert, with help from Lee McLoughlin and others. 
