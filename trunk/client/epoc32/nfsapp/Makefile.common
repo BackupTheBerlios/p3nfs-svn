@@ -1,21 +1,6 @@
-include version
-
-LLIBS=euser apparc cone eikon
-
-NAME=nfsapp
-ARCH=epocR5
-OBJECTS=nfsapp.o
-TARGET=$(NAME).app
-PKGFILES=$(NAME).app $(NAME).aif $(NAME).rsc nfsclient.exe nfsclient.ini
-U1 = 10000079
-U2 = 1000006c
-U3 = 101F7058
-
-CFLAGS = -O -I. -DUID3=0x$(U3)
-
-# This is nfsclient.exe specific
-EXELIBS=plpsvr
-EXEFLAGS=-DPLP -D_CABLE -D_IRDA -I$(EPOC)/include/libc
+# common makefile
+all:
+	@echo "all"
 
 clean:
 	rm -f $(GENERATED) $(NAME).aifspec
