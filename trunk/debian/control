@@ -2,7 +2,7 @@ Source: p3nfs
 Section: otherosfs
 Priority: extra
 Maintainer: Geert Stappers <stappers@debian.org>
-Standards-Version: 3.6.1
+Standards-Version: 3.7.2
 Build-Depends: debhelper (>= 4.1.16)
 
 Package: p3nfs
