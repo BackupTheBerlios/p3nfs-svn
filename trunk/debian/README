@@ -1,0 +1,13 @@
+
+Please refer to /usr/share/doc/p3nfs/README for the usage.
+
+Before using it,
+transfer /usr/share/p3nfs/epoc16/opl/nfsc3.opl
+or /usr/share/p3nfs/epoc16/nfsc/nfsc.app to your Psion 3.
+
+On Psion 5 and other Symbian you
+transfer /usr/share/p3nfs/epoc32/opl/nfsc5.opl
+or /usr/share/p3nfs/epoc32/nfsapp to the "client"
+
+You have to run p3nfsd as root, since it wants to use NFS.
+Another alternative is to make it setuid root.

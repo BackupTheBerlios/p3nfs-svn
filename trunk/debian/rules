@@ -53,6 +53,8 @@ binary-arch: build install
 	-find debian/p3nfs/usr -name .svn -type d -exec rm -rf {} \;
 	install -m 644 debian/p3nfs.lintian-override \
 	  debian/p3nfs/usr/share/lintian/overrides/p3nfs
+	install -m 644 debian/README \
+	  debian/p3nfs/usr/share/doc/p3nfs/debian.README
 	dh_link
 	dh_strip
 	dh_compress
