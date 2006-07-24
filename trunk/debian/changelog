@@ -1,6 +1,8 @@
 p3nfs (5.19-1) UNRELEASED; urgency=low
 
-  * New upstream release, has files moved into new directories.
+  * New upstream release.
+   - Has files moved into new directories.
+   - Hints ZMODEM for bootstrapping (Closes: #167317)
   * Standard version bumped to 3.7.2
   * Linda & Lintian Clean.
   * Moved the postinst message into Debian README

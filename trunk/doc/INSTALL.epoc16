@@ -149,6 +149,17 @@ BOOTSTRAPPING:
     >     ioclose(h%)
     >   ENDP
 
+    Michael Below reported another way for bootstrapping,
+    this is what he wrote to http://bugs.debian.org/167317
+
+    > At least the Psion 3c has got a Comm app with ZMODEM support,
+    > so if you have a serial cable, all you have to do is install
+    > the Comm app from ROM (as described in Psion manual), attach
+    > the cable to Psion and Linux box, fire up something like minicom
+    > on the Linux side (no modem init necessary, 38400 8N1), start
+    > the Comm app for Psion (set to 38400 8N1), start ZMODEM receive
+    > on the Psion, start ZMODEM send in minicom.
+
 
 STARTING:
   First: Make sure the Serial Link is connected both to your unix machine
