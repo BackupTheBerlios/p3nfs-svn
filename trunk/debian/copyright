@@ -5,17 +5,11 @@ with help from Lee McLoughlin and others.  The package allows you to
 mount psion drives.
 
 This package was put together by David Frey <dfrey@debian.org> and is
-currently "maintained" by Steve Haslam <araqnid@debian.org>, who no
-longer has a (working) Psion, so this position is essentially vacant.
+currently maintained by Geert Stappers <stappers@debian.org>.
 
 Upstream location:
 	http://www.koeniglich.de/p3nfs.html
 
- Changes:
-
-  * Debian maintenance files added.
-  * libc6-patches from Rudolf Koenig and me.
-  * Changed default directories in include/config.h
 
 Copyright:
 
