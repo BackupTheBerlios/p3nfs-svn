@@ -44,11 +44,15 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs
+	rm debian/p3nfs/usr/share/doc/p3nfs/LICENCE
 	dh_installexamples etc/*
 	dh_installmenu
 	dh_installcron
-	dh_installman
+	dh_installman debian/p3nfsd.1
 	dh_installchangelogs doc/CHANGES
+	-find debian/p3nfs/usr -name .svn -type d -exec rm -rf {} \;
+	install -m 644 debian/p3nfs.lintian-override \
+	  debian/p3nfs/usr/share/lintian/overrides/p3nfs
 	dh_link
 	dh_strip
 	dh_compress
