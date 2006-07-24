@@ -1,10 +1,10 @@
 p3nfs (5.19-1) UNRELEASED; urgency=low
 
-  * New upstream release.
-  
+  * New upstream release, has files moved into new directories.
+
   * Standard version bumped to 3.7.2
 
- -- Geert Stappers <stappers@debian.org>  Sun, 23 Jul 2006 21:07:59 +0200
+ -- Geert Stappers <stappers@debian.org>  Mon, 24 Jul 2006 11:30:34 +0200
 
 p3nfs (5.18-2) unstable; urgency=low
 
