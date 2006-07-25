@@ -31,6 +31,7 @@ install-stamp: build-stamp
 	install -c -s bin/p3nfsd debian/p3nfs/usr/bin
 	cp -r client/epoc16 client/epoc32 debian/p3nfs/usr/share/p3nfs
 	rm -rf debian/p3nfs/usr/share/p3nfs/nfsc/src
+	cp bin/*.sis debian/p3nfs/usr/share/p3nfs/client
 	find debian/p3nfs/usr/share/p3nfs -type f -print0 | xargs -0 chmod -x
 
 	touch install-stamp

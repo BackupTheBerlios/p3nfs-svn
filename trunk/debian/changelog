@@ -8,6 +8,7 @@ p3nfs (5.19-1) unstable; urgency=low
   * Moved the postinst message into Debian README
    - updated there the paths to files (Closes: #240613)
   * debian/copyright tells there are also some BSD licensed files.
+  * Place bin/*.sis files in /usr/share/p3nfs/client
 
  -- Geert Stappers <stappers@debian.org>  Tue, 25 Jul 2006 02:21:48 +0200
 
