@@ -38,3 +38,12 @@ Copyright 1992-1994 Rudolf Koenig.
 
 On Debian GNU/Linux systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'.
+
+The files
+  server/misc-aix3.h
+  server/mount_aix.c
+  server/mtab_aix.c
+  server/os-aix3.h
+are "Berkeley licensed". On Debian GNU/Linux systems,
+the complete text of the Berkeley Software Distribution License can be
+found in `/usr/share/common-licenses/BSD'.
